@@ -1,0 +1,49 @@
+\begin{alltt}
+{\scriptsize   1}                       | # Execution begins at address 0
+{\scriptsize   2}   0x000:              |         .pos 0
+{\scriptsize   3}   0x000: 30f400010000 | init:   irmovl Stack, %esp      # Set up stack pointer
+{\scriptsize   4}   0x006: 30f500010000 |         irmovl Stack, %ebp      # Set up base pointer
+{\scriptsize   5}   0x00c: 8024000000   |         call Main               # Execute main program
+{\scriptsize   6}   0x011: 00           |         halt                    # Terminate program
+{\scriptsize   7}                       |
+{\scriptsize   8}                       | # Array of 4 elements
+{\scriptsize   9}   0x014:              |         .align 4
+{\scriptsize  10}   0x014: 0d000000     | array:  .long 0xd
+{\scriptsize  11}   0x018: c0000000     |         .long 0xc0
+{\scriptsize  12}   0x01c: 000b0000     |         .long 0xb00
+{\scriptsize  13}   0x020: 00a00000     |         .long 0xa000
+{\scriptsize  14}                       |
+{\scriptsize  15}   0x024: a05f         | Main:   pushl %ebp
+{\scriptsize  16}   0x026: 2045         |         rrmovl %esp,%ebp
+{\scriptsize  17}   0x028: 30f004000000 |         irmovl $4,%eax
+{\scriptsize  18}   0x02e: a00f         |         pushl %eax              # Push 4
+{\scriptsize  19}   0x030: 30f214000000 |         irmovl array,%edx
+{\scriptsize  20}   0x036: a02f         |         pushl %edx              # Push array
+{\scriptsize  21}   0x038: 8042000000   |         call Sum                # Sum(array, 4)
+{\scriptsize  22}   0x03d: 2054         |         rrmovl %ebp,%esp
+{\scriptsize  23}   0x03f: b05f         |         popl %ebp
+{\scriptsize  24}   0x041: 90           |         ret
+{\scriptsize  25}                       |
+{\scriptsize  26}                       |         # int Sum(int *Start, int Count)
+{\scriptsize  27}   0x042: a05f         | Sum:    pushl %ebp
+{\scriptsize  28}   0x044: 2045         |         rrmovl %esp,%ebp
+{\scriptsize  29}   0x046: 501508000000 |         mrmovl 8(%ebp),%ecx     # ecx = Start
+{\scriptsize  30}   0x04c: 50250c000000 |         mrmovl 12(%ebp),%edx    # edx = Count
+{\scriptsize  31}   0x052: 6300         |         xorl %eax,%eax          # sum = 0
+{\scriptsize  32}   0x054: 6222         |         andl   %edx,%edx        # Set condition codes
+{\scriptsize  33}   0x056: 7378000000   |         je     End
+{\scriptsize  34}   0x05b: 506100000000 | Loop:   mrmovl (%ecx),%esi      # get *Start
+{\scriptsize  35}   0x061: 6060         |         addl %esi,%eax          # add to sum
+{\scriptsize  36}   0x063: 30f304000000 |         irmovl $4,%ebx          #
+{\scriptsize  37}   0x069: 6031         |         addl %ebx,%ecx          # Start++
+{\scriptsize  38}   0x06b: 30f3ffffffff |         irmovl $-1,%ebx         #
+{\scriptsize  39}   0x071: 6032         |         addl %ebx,%edx          # Count--
+{\scriptsize  40}   0x073: 745b000000   |         jne    Loop             # Stop when 0
+{\scriptsize  41}   0x078: 2054         | End:    rrmovl %ebp,%esp
+{\scriptsize  42}   0x07a: b05f         |         popl %ebp
+{\scriptsize  43}   0x07c: 90           |         ret
+{\scriptsize  44}                       |
+{\scriptsize  45}                       | # The stack starts here and grows to lower addresses
+{\scriptsize  46}   0x100:              |         .pos 0x100
+{\scriptsize  47}   0x100:              | Stack:
+\end{alltt}
