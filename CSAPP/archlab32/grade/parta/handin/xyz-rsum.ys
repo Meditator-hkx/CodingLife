@@ -1,0 +1,43 @@
+# Initial code
+	irmovl Stack,%esp
+	rrmovl %esp,%ebp
+	irmovl ele1, %edx
+	pushl %edx
+	call rsum_list
+	halt
+
+# Sample linked list
+.align 4
+ele1:
+	.long 0x00a
+	.long ele2
+ele2:
+	.long 0x0b0
+	.long ele3
+ele3:
+	.long 0xc00
+	.long 0
+
+rsum_list:
+	pushl %ebp		# Save %ebp
+	rrmovl %esp,%ebp	# Set Frame ptr
+	pushl %ebx		# Save %ebx
+	mrmovl 8(%ebp),%eax	# Get ls
+	andl %eax,%eax		# ls == 0?
+	je zreturn		# Yes, goto zreturn
+	mrmovl (%eax),%ebx	# val = ls->val
+	mrmovl 4(%eax),%eax	# nls = ls->next
+	pushl %eax		# push
+	call rsum_list		# rsum_list(nls)
+	addl %ebx,%eax		# val+rest
+	jmp done		# Goto done
+zreturn:
+	xorl %eax,%eax		# val = 0
+done:
+	mrmovl -4(%ebp), %ebx	# restore %ebx
+	rrmovl %ebp,%esp	# remove stack frame
+	popl %ebp		# restore %ebp
+	ret			# return
+
+.pos 0x100
+Stack:

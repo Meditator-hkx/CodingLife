@@ -1,0 +1,3694 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 38 24 574 768
+%%Title: Enscript Output
+%%For: Randal E Bryant
+%%Creator: GNU enscript 1.6.4
+%%CreationDate: Thu Jun 21 09:48:55 2012
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 4
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 4
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 7 7 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6 4
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      fname length fmodstr length add pagenumstr length add 95 6 idiv add d_header_w 6 idiv le{
+        5 0 moveto fname show
+        45 0 rmoveto fmodstr show
+        45 0 rmoveto pagenumstr show
+      } {
+        5 0 moveto fmodstr show
+        45 0 rmoveto pagenumstr show
+        fname length d_header_w 6 idiv idiv 1 add 10 mul 5 exch moveto
+        1 1 fname length d_header_w 6 idiv idiv
+        {
+          dup fname exch 1 sub d_header_w 6 idiv mul d_header_w 6 idiv getinterval show
+          5 exch 10 mul fname length d_header_w 6 idiv idiv 1 add 10 mul exch sub moveto
+        } for
+        5 10 moveto
+        fname fname length d_header_w 6 idiv idiv d_header_w 6 idiv mul dup fname length exch sub getinterval show
+      }ifelse
+    }ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 744 def
+/d_page_h 536 def
+/d_header_x 0 def
+/d_header_y 492 def
+/d_header_w 744 def
+/d_header_h 44 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 744 def
+/d_footer_h 0 def
+/d_output_w 744 def
+/d_output_h 492 def
+/cols 2 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 1 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(/***********************************************************************) s
+5 474 M
+( *) s
+5 466 M
+( * ssim.c - Sequential Y86 simulator) s
+5 458 M
+( * ) s
+5 450 M
+( * Copyright \(c\) 2002, R. Bryant and D. O'Hallaron, All rights reserved.) s
+5 442 M
+( * May not be used, modified, or copied without permission.) s
+5 434 M
+( ***********************************************************************/ ) s
+5 418 M
+(#include <stdio.h>) s
+5 410 M
+(#include <stdlib.h>) s
+5 402 M
+(#include <stdarg.h>) s
+5 394 M
+(#include <unistd.h>) s
+5 386 M
+(#include <string.h>) s
+5 378 M
+(#include "isa.h") s
+5 370 M
+(#include "sim.h") s
+5 354 M
+(#define MAXBUF 1024) s
+5 338 M
+(#ifdef HAS_GUI) s
+5 330 M
+(#include <tk.h>) s
+5 322 M
+(#endif /* HAS_GUI */) s
+5 306 M
+(#define MAXARGS 128) s
+5 298 M
+(#define MAXBUF 1024) s
+5 290 M
+(#define TKARGS 3) s
+5 274 M
+(/***************) s
+5 266 M
+( * Begin Globals) s
+5 258 M
+( ***************/) s
+5 242 M
+(/* Simulator name defined and initialized by the compiled HCL file */) s
+5 234 M
+(/* according to the -n argument supplied to hcl2c */) s
+5 226 M
+(extern char simname[];) s
+5 210 M
+(/* SEQ=0, SEQ+=1. Modified by HCL main\(\) */) s
+5 202 M
+(int plusmode = 0; ) s
+5 186 M
+(/* Parameters modifed by the command line */) s
+5 178 M
+(int gui_mode = FALSE;    /* Run in GUI mode instead of TTY mode? \(-g\) */) s
+5 170 M
+(char *object_filename;   /* The input object file name. */) s
+5 162 M
+(FILE *object_file;       /* Input file handle */) s
+5 154 M
+(bool_t verbosity = 2;    /* Verbosity level [TTY only] \(-v\) */ ) s
+5 146 M
+(int instr_limit = 10000; /* Instruction limit [TTY only] \(-l\) */) s
+5 138 M
+(bool_t do_check = FALSE; /* Test with YIS? [TTY only] \(-t\) */) s
+5 122 M
+(/************* ) s
+5 114 M
+( * End Globals ) s
+5 106 M
+( *************/) s
+5 82 M
+(/***************************) s
+5 74 M
+( * Begin function prototypes ) s
+5 66 M
+( ***************************/) s
+5 50 M
+(static void usage\(char *name\);           /* Print helpful usage message */) s
+5 42 M
+(static void run_tty_sim\(\);               /* Run simulator in TTY mode */) s
+5 26 M
+(#ifdef HAS_GUI) s
+5 18 M
+(void addAppCommands\(Tcl_Interp *interp\); /* Add application-dependent commands */) s
+5 10 M
+(#endif /* HAS_GUI */) s
+377 482 M
+(/*************************) s
+377 474 M
+( * End function prototypes) s
+377 466 M
+( *************************/) s
+377 442 M
+(/*******************************************************************) s
+377 434 M
+( * Part 1: This part is the initial entry point that handles general) s
+377 426 M
+( * initialization. It parses the command line and does any necessary) s
+377 418 M
+( * setup to run in either TTY or GUI mode, and then starts the) s
+377 410 M
+( * simulation.) s
+377 402 M
+( *******************************************************************/) s
+377 386 M
+(/* ) s
+377 378 M
+( * sim_main - main simulator routine. This function is called from the) s
+377 370 M
+( * main\(\) routine in the HCL file.) s
+377 362 M
+( */) s
+377 354 M
+(int sim_main\(int argc, char **argv\)) s
+377 346 M
+({) s
+377 338 M
+(    int i;) s
+377 330 M
+(    int c;) s
+377 322 M
+(    char *myargv[MAXARGS];) s
+377 306 M
+(    ) s
+377 298 M
+(    /* Parse the command line arguments */) s
+377 290 M
+(    while \(\(c = getopt\(argc, argv, "htgl:v:"\)\) != -1\) {) s
+377 282 M
+(        switch\(c\) {) s
+377 274 M
+(        case 'h':) s
+377 266 M
+(            usage\(argv[0]\);) s
+377 258 M
+(            break;) s
+377 250 M
+(        case 'l':) s
+377 242 M
+(            instr_limit = atoi\(optarg\);) s
+377 234 M
+(            break;) s
+377 226 M
+(        case 'v':) s
+377 218 M
+(            verbosity = atoi\(optarg\);) s
+377 210 M
+(            if \(verbosity < 0 || verbosity > 2\) {) s
+377 202 M
+(                printf\("Invalid verbosity %d\\n", verbosity\);) s
+377 194 M
+(                usage\(argv[0]\);) s
+377 186 M
+(            }) s
+377 178 M
+(            break;) s
+377 170 M
+(        case 't':) s
+377 162 M
+(            do_check = TRUE;) s
+377 154 M
+(            break;) s
+377 146 M
+(        case 'g':) s
+377 138 M
+(            gui_mode = TRUE;) s
+377 130 M
+(            break;) s
+377 122 M
+(        default:) s
+377 114 M
+(            printf\("Invalid option '%c'\\n", c\);) s
+377 106 M
+(            usage\(argv[0]\);) s
+377 98 M
+(            break;) s
+377 90 M
+(        }) s
+377 82 M
+(    }) s
+377 58 M
+(    /* Do we have too many arguments? */) s
+377 50 M
+(    if \(optind < argc - 1\) {) s
+377 42 M
+(        printf\("Too many command line arguments:"\);) s
+377 34 M
+(        for \(i = optind; i < argc; i++\)) s
+377 26 M
+(            printf\(" %s", argv[i]\);) s
+377 18 M
+(        printf\("\\n"\);) s
+377 10 M
+(        usage\(argv[0]\);) s
+377 2 M
+(    }) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 2 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 466 M
+(    /* The single unflagged argument should be the object file name */) s
+5 458 M
+(    object_filename = NULL;) s
+5 450 M
+(    object_file = NULL;) s
+5 442 M
+(    if \(optind < argc\) {) s
+5 434 M
+(        object_filename = argv[optind];) s
+5 426 M
+(        object_file = fopen\(object_filename, "r"\);) s
+5 418 M
+(        if \(!object_file\) {) s
+5 410 M
+(            fprintf\(stderr, "Couldn't open object file %s\\n", object_filename\);) s
+5 402 M
+(            exit\(1\);) s
+5 394 M
+(        }) s
+5 386 M
+(    }) s
+5 362 M
+(    /* Run the simulator in GUI mode \(-g flag\) */) s
+5 354 M
+(    if \(gui_mode\) {) s
+5 338 M
+(#ifndef HAS_GUI) s
+5 330 M
+(        printf\("To run in GUI mode, you must recompile with the HAS_GUI constant defin) s
+5 322 M
+(ed.\\n"\);) s
+5 314 M
+(        exit\(1\);) s
+5 306 M
+(#endif /* HAS_GUI */) s
+5 290 M
+(        /* In GUI mode, we must specify the object file on command line */ ) s
+5 282 M
+(        if \(!object_file\) {) s
+5 274 M
+(            printf\("Missing object file argument in GUI mode\\n"\);) s
+5 266 M
+(            usage\(argv[0]\);) s
+5 258 M
+(        }) s
+5 242 M
+(        /* Build the command line for the GUI simulator */) s
+5 234 M
+(        for \(i = 0; i < TKARGS; i++\) {) s
+5 226 M
+(            if \(\(myargv[i] = malloc\(MAXBUF*sizeof\(char\)\)\) == NULL\) {) s
+5 218 M
+(                perror\("malloc error"\);) s
+5 210 M
+(                exit\(1\);) s
+5 202 M
+(            }) s
+5 194 M
+(        }) s
+5 186 M
+(        strcpy\(myargv[0], argv[0]\);) s
+5 170 M
+(#if 0) s
+5 162 M
+(        printf\("argv[0]=%s\\n", argv[0]\);) s
+5 154 M
+(        {) s
+5 146 M
+(            char buf[1000]; ) s
+5 138 M
+(            getcwd\(buf, 1000\);) s
+5 130 M
+(            printf\("cwd=%s\\n", buf\);) s
+5 122 M
+(        }) s
+5 114 M
+(#endif) s
+5 98 M
+(        if \(plusmode == 0\) /* SEQ */) s
+5 90 M
+(            strcpy\(myargv[1], "seq.tcl"\);) s
+5 82 M
+(        else) s
+5 74 M
+(            strcpy\(myargv[1], "seq+.tcl"\);) s
+5 66 M
+(        strcpy\(myargv[2], object_filename\);) s
+5 58 M
+(        myargv[3] = NULL;) s
+5 42 M
+(        /* Start the GUI simulator */) s
+5 34 M
+(#ifdef HAS_GUI) s
+5 26 M
+(        Tk_Main\(TKARGS, myargv, Tcl_AppInit\);) s
+5 18 M
+(#endif /* HAS_GUI */) s
+5 10 M
+(        exit\(0\);) s
+5 2 M
+(    }) s
+377 474 M
+(    /* Otherwise, run the simulator in TTY mode \(no -g flag\) */) s
+377 466 M
+(    run_tty_sim\(\);) s
+377 450 M
+(    exit\(0\);) s
+377 442 M
+(}) s
+377 426 M
+(/* ) s
+377 418 M
+( * run_tty_sim - Run the simulator in TTY mode) s
+377 410 M
+( */) s
+377 402 M
+(static void run_tty_sim\(\) ) s
+377 394 M
+({) s
+377 386 M
+(    int icount = 0;) s
+377 378 M
+(    status = STAT_AOK;) s
+377 370 M
+(    cc_t result_cc = 0;) s
+377 362 M
+(    int byte_cnt = 0;) s
+377 354 M
+(    mem_t mem0, reg0;) s
+377 346 M
+(    state_ptr isa_state = NULL;) s
+377 322 M
+(    /* In TTY mode, the default object file comes from stdin */) s
+377 314 M
+(    if \(!object_file\) {) s
+377 306 M
+(        object_file = stdin;) s
+377 298 M
+(    }) s
+377 282 M
+(    /* Initializations */) s
+377 274 M
+(    if \(verbosity >= 2\)) s
+377 266 M
+(        sim_set_dumpfile\(stdout\);) s
+377 258 M
+(    sim_init\(\);) s
+377 242 M
+(    /* Emit simulator name */) s
+377 234 M
+(    printf\("%s\\n", simname\);) s
+377 218 M
+(    byte_cnt = load_mem\(mem, object_file, 1\);) s
+377 210 M
+(    if \(byte_cnt == 0\) {) s
+377 202 M
+(        fprintf\(stderr, "No lines of code found\\n"\);) s
+377 194 M
+(        exit\(1\);) s
+377 186 M
+(    } else if \(verbosity >= 2\) {) s
+377 178 M
+(        printf\("%d bytes of code read\\n", byte_cnt\);) s
+377 170 M
+(    }) s
+377 162 M
+(    fclose\(object_file\);) s
+377 154 M
+(    if \(do_check\) {) s
+377 146 M
+(        isa_state = new_state\(0\);) s
+377 138 M
+(        free_mem\(isa_state->r\);) s
+377 130 M
+(        free_mem\(isa_state->m\);) s
+377 122 M
+(        isa_state->m = copy_mem\(mem\);) s
+377 114 M
+(        isa_state->r = copy_mem\(reg\);) s
+377 106 M
+(        isa_state->cc = cc;) s
+377 98 M
+(    }) s
+377 82 M
+(    mem0 = copy_mem\(mem\);) s
+377 74 M
+(    reg0 = copy_mem\(reg\);) s
+377 66 M
+(    ) s
+377 50 M
+(    icount = sim_run\(instr_limit, &status, &result_cc\);) s
+377 42 M
+(    if \(verbosity > 0\) {) s
+377 34 M
+(        printf\("%d instructions executed\\n", icount\);) s
+377 26 M
+(        printf\("Status = %s\\n", stat_name\(status\)\);) s
+377 18 M
+(        printf\("Condition Codes: %s\\n", cc_name\(result_cc\)\);) s
+377 10 M
+(        printf\("Changed Register State:\\n"\);) s
+377 2 M
+(        diff_reg\(reg0, reg, stdout\);) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 3 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(        printf\("Changed Memory State:\\n"\);) s
+5 474 M
+(        diff_mem\(mem0, mem, stdout\);) s
+5 466 M
+(    }) s
+5 458 M
+(    if \(do_check\) {) s
+5 450 M
+(        byte_t e = STAT_AOK;) s
+5 442 M
+(        int step;) s
+5 434 M
+(        bool_t match = TRUE;) s
+5 418 M
+(        for \(step = 0; step < instr_limit && e == STAT_AOK; step++\) {) s
+5 410 M
+(            e = step_state\(isa_state, stdout\);) s
+5 402 M
+(        }) s
+5 386 M
+(        if \(diff_reg\(isa_state->r, reg, NULL\)\) {) s
+5 378 M
+(            match = FALSE;) s
+5 370 M
+(            if \(verbosity > 0\) {) s
+5 362 M
+(                printf\("ISA Register != Pipeline Register File\\n"\);) s
+5 354 M
+(                diff_reg\(isa_state->r, reg, stdout\);) s
+5 346 M
+(            }) s
+5 338 M
+(        }) s
+5 330 M
+(        if \(diff_mem\(isa_state->m, mem, NULL\)\) {) s
+5 322 M
+(            match = FALSE;) s
+5 314 M
+(            if \(verbosity > 0\) {) s
+5 306 M
+(                printf\("ISA Memory != Pipeline Memory\\n"\);) s
+5 298 M
+(                diff_mem\(isa_state->m, mem, stdout\);) s
+5 290 M
+(            }) s
+5 282 M
+(        }) s
+5 274 M
+(        if \(isa_state->cc != result_cc\) {) s
+5 266 M
+(            match = FALSE;) s
+5 258 M
+(            if \(verbosity > 0\) {) s
+5 250 M
+(                printf\("ISA Cond. Codes \(%s\) != Pipeline Cond. Codes \(%s\)\\n",) s
+5 242 M
+(                       cc_name\(isa_state->cc\), cc_name\(result_cc\)\);) s
+5 234 M
+(            }) s
+5 226 M
+(        }) s
+5 218 M
+(        if \(match\) {) s
+5 210 M
+(            printf\("ISA Check Succeeds\\n"\);) s
+5 202 M
+(        } else {) s
+5 194 M
+(            printf\("ISA Check Fails\\n"\);) s
+5 186 M
+(        }) s
+5 178 M
+(    }) s
+5 170 M
+(}) s
+5 138 M
+(/*) s
+5 130 M
+( * usage - print helpful diagnostic information) s
+5 122 M
+( */) s
+5 114 M
+(static void usage\(char *name\)) s
+5 106 M
+({) s
+5 98 M
+(    printf\("Usage: %s [-htg] [-l m] [-v n] file.yo\\n", name\);) s
+5 90 M
+(    printf\("file.yo required in GUI mode, optional in TTY mode \(default stdin\)\\n"\);) s
+5 82 M
+(    printf\("   -h     Print this message\\n"\);) s
+5 74 M
+(    printf\("   -g     Run in GUI mode instead of TTY mode \(default TTY\)\\n"\);  ) s
+5 66 M
+(    printf\("   -l m   Set instruction limit to m [TTY mode only] \(default %d\)\\n", inst) s
+5 58 M
+(r_limit\);) s
+5 50 M
+(    printf\("   -v n   Set verbosity level to 0 <= n <= 2 [TTY mode only] \(default %d\)\\) s
+5 42 M
+(n", verbosity\);) s
+5 34 M
+(    printf\("   -t     Test result against ISA simulator \(yis\) [TTY mode only]\\n"\);) s
+5 26 M
+(    exit\(0\);) s
+5 18 M
+(}) s
+377 474 M
+(/*********************************************************) s
+377 466 M
+( * Part 2: This part contains the core simulator routines.) s
+377 458 M
+( *********************************************************/) s
+377 442 M
+(/**********************) s
+377 434 M
+( * Begin Part 2 Globals) s
+377 426 M
+( **********************/) s
+377 410 M
+(/*) s
+377 402 M
+( * Variables related to hardware units in the processor) s
+377 394 M
+( */) s
+377 386 M
+(mem_t mem;  /* Instruction and data memory */) s
+377 378 M
+(int minAddr = 0;) s
+377 370 M
+(int memCnt = 0;) s
+377 354 M
+(/* Other processor state */) s
+377 346 M
+(mem_t reg;               /* Register file */) s
+377 338 M
+(cc_t cc = DEFAULT_CC;    /* Condition code register */) s
+377 330 M
+(cc_t cc_in = DEFAULT_CC; /* Input to condition code register */) s
+377 314 M
+(/* ) s
+377 306 M
+( * SEQ+: Results computed by previous instruction.) s
+377 298 M
+( * Used to compute PC in current instruction ) s
+377 290 M
+( */) s
+377 282 M
+(byte_t prev_icode = I_NOP;) s
+377 274 M
+(byte_t prev_ifun = 0;) s
+377 266 M
+(word_t prev_valc = 0;) s
+377 258 M
+(word_t prev_valm = 0;) s
+377 250 M
+(word_t prev_valp = 0;) s
+377 242 M
+(bool_t prev_bcond = FALSE;) s
+377 226 M
+(byte_t prev_icode_in = I_NOP;) s
+377 218 M
+(byte_t prev_ifun_in = 0;) s
+377 210 M
+(word_t prev_valc_in = 0;) s
+377 202 M
+(word_t prev_valm_in = 0;) s
+377 194 M
+(word_t prev_valp_in = 0;) s
+377 186 M
+(bool_t prev_bcond_in = FALSE;) s
+377 162 M
+(/* Program Counter */) s
+377 154 M
+(word_t pc = 0; /* Program counter value */) s
+377 146 M
+(word_t pc_in = 0;/* Input to program counter */) s
+377 130 M
+(/* Intermediate values */) s
+377 122 M
+(byte_t imem_icode = I_NOP;) s
+377 114 M
+(byte_t imem_ifun = F_NONE;) s
+377 106 M
+(byte_t icode = I_NOP;) s
+377 98 M
+(word_t ifun = 0;) s
+377 90 M
+(byte_t instr = HPACK\(I_NOP, F_NONE\);) s
+377 82 M
+(word_t ra = REG_NONE;) s
+377 74 M
+(word_t rb = REG_NONE;) s
+377 66 M
+(word_t valc = 0;) s
+377 58 M
+(word_t valp = 0;) s
+377 50 M
+(bool_t imem_error;) s
+377 42 M
+(bool_t instr_valid;) s
+377 26 M
+(word_t srcA = REG_NONE;) s
+377 18 M
+(word_t srcB = REG_NONE;) s
+377 10 M
+(word_t destE = REG_NONE;) s
+377 2 M
+(word_t destM = REG_NONE;) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 4 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (4) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(word_t vala = 0;) s
+5 474 M
+(word_t valb = 0;) s
+5 466 M
+(word_t vale = 0;) s
+5 450 M
+(bool_t bcond = FALSE;) s
+5 442 M
+(bool_t cond = FALSE;) s
+5 434 M
+(word_t valm = 0;) s
+5 426 M
+(bool_t dmem_error;) s
+5 410 M
+(bool_t mem_write = FALSE;) s
+5 402 M
+(word_t mem_addr = 0;) s
+5 394 M
+(word_t mem_data = 0;) s
+5 386 M
+(byte_t status = STAT_AOK;) s
+5 362 M
+(/* Values computed by control logic */) s
+5 354 M
+(int gen_pc\(\);  /* SEQ+ */) s
+5 346 M
+(int gen_icode\(\);) s
+5 338 M
+(int gen_ifun\(\);) s
+5 330 M
+(int gen_need_regids\(\);) s
+5 322 M
+(int gen_need_valC\(\);) s
+5 314 M
+(int gen_instr_valid\(\);) s
+5 306 M
+(int gen_srcA\(\);) s
+5 298 M
+(int gen_srcB\(\);) s
+5 290 M
+(int gen_dstE\(\);) s
+5 282 M
+(int gen_dstM\(\);) s
+5 274 M
+(int gen_aluA\(\);) s
+5 266 M
+(int gen_aluB\(\);) s
+5 258 M
+(int gen_alufun\(\);) s
+5 250 M
+(int gen_set_cc\(\);) s
+5 242 M
+(int gen_mem_addr\(\);) s
+5 234 M
+(int gen_mem_data\(\);) s
+5 226 M
+(int gen_mem_read\(\);) s
+5 218 M
+(int gen_mem_write\(\);) s
+5 210 M
+(int gen_Stat\(\);) s
+5 202 M
+(int gen_new_pc\(\);) s
+5 186 M
+(/* Log file */) s
+5 178 M
+(FILE *dumpfile = NULL;) s
+5 162 M
+(#ifdef HAS_GUI) s
+5 154 M
+(/* Representations of digits */) s
+5 146 M
+(static char digits[16] =) s
+5 138 M
+(    {'0', '1', '2', '3', '4', '5', '6', '7',) s
+5 130 M
+(     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};) s
+5 122 M
+(#endif /* HAS_GUI */) s
+5 106 M
+(/********************) s
+5 98 M
+( * End Part 2 Globals) s
+5 90 M
+( ********************/) s
+5 74 M
+(#ifdef HAS_GUI) s
+5 58 M
+(/* Create string in hex/oct/binary format with leading zeros */) s
+5 50 M
+(/* bpd denotes bits per digit  Should be in range 1-4,) s
+5 42 M
+(   bpw denotes bits per word.*/) s
+5 34 M
+(void wstring\(unsigned x, int bpd, int bpw, char *str\)) s
+5 26 M
+({) s
+5 18 M
+(    int digit;) s
+5 10 M
+(    unsigned mask = \(1 << bpd\) - 1;) s
+5 2 M
+(    for \(digit = \(bpw-1\)/bpd; digit >= 0; digit--\) {) s
+377 482 M
+(        unsigned val = \(x >> \(digit * bpd\)\) & mask;) s
+377 474 M
+(        *str++ = digits[val];) s
+377 466 M
+(    }) s
+377 458 M
+(    *str = '\\0';) s
+377 450 M
+(}) s
+377 434 M
+(/* used for formatting instructions */) s
+377 426 M
+(static char status_msg[128];) s
+377 410 M
+(/* SEQ+ */) s
+377 402 M
+(static char *format_prev\(\)) s
+377 394 M
+({) s
+377 386 M
+(    char istring[9];) s
+377 378 M
+(    char mstring[9];) s
+377 370 M
+(    char pstring[9];) s
+377 362 M
+(    wstring\(prev_valc, 4, 32, istring\);) s
+377 354 M
+(    wstring\(prev_valm, 4, 32, mstring\);) s
+377 346 M
+(    wstring\(prev_valp, 4, 32, pstring\);) s
+377 338 M
+(    sprintf\(status_msg, "%c %s %s %s %s",) s
+377 330 M
+(            prev_bcond ? 'Y' : 'N',) s
+377 322 M
+(            iname\(HPACK\(prev_icode, prev_ifun\)\),) s
+377 314 M
+(            istring, mstring, pstring\);) s
+377 298 M
+(    return status_msg;) s
+377 290 M
+(}) s
+377 274 M
+(static char *format_pc\(\)) s
+377 266 M
+({) s
+377 258 M
+(    char pstring[9];) s
+377 250 M
+(    wstring\(pc, 4, 32, pstring\);) s
+377 242 M
+(    sprintf\(status_msg, "%s", pstring\);) s
+377 234 M
+(    return status_msg;) s
+377 226 M
+(}) s
+377 210 M
+(static char *format_f\(\)) s
+377 202 M
+({) s
+377 194 M
+(    char valcstring[9];) s
+377 186 M
+(    char valpstring[9];) s
+377 178 M
+(    wstring\(valc, 4, 32, valcstring\);) s
+377 170 M
+(    wstring\(valp, 4, 32, valpstring\);) s
+377 162 M
+(    sprintf\(status_msg, "%s %s %s %s %s", ) s
+377 154 M
+(            iname\(HPACK\(icode, ifun\)\),) s
+377 146 M
+(            reg_name\(ra\),) s
+377 138 M
+(            reg_name\(rb\),) s
+377 130 M
+(            valcstring,) s
+377 122 M
+(            valpstring\);) s
+377 114 M
+(    return status_msg;) s
+377 106 M
+(}) s
+377 90 M
+(static char *format_d\(\)) s
+377 82 M
+({) s
+377 74 M
+(    char valastring[9];) s
+377 66 M
+(    char valbstring[9];) s
+377 58 M
+(    wstring\(vala, 4, 32, valastring\);) s
+377 50 M
+(    wstring\(valb, 4, 32, valbstring\);) s
+377 42 M
+(    sprintf\(status_msg, "%s %s %s %s %s %s",) s
+377 34 M
+(            valastring,) s
+377 26 M
+(            valbstring,) s
+377 18 M
+(            reg_name\(destE\),) s
+377 10 M
+(            reg_name\(destM\),) s
+377 2 M
+(            reg_name\(srcA\),) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 5 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (5) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(            reg_name\(srcB\)\);) s
+5 466 M
+(    return status_msg;) s
+5 458 M
+(}) s
+5 442 M
+(static char *format_e\(\)) s
+5 434 M
+({) s
+5 426 M
+(    char valestring[9];) s
+5 418 M
+(    wstring\(vale, 4, 32, valestring\);) s
+5 410 M
+(    sprintf\(status_msg, "%c %s",) s
+5 402 M
+(            bcond ? 'Y' : 'N',) s
+5 394 M
+(            valestring\);) s
+5 386 M
+(    return status_msg;) s
+5 378 M
+(}) s
+5 362 M
+(static char *format_m\(\)) s
+5 354 M
+({) s
+5 346 M
+(    char valmstring[9];) s
+5 338 M
+(    wstring\(valm, 4, 32, valmstring\);) s
+5 330 M
+(    sprintf\(status_msg, "%s", valmstring\);) s
+5 322 M
+(    return status_msg;) s
+5 314 M
+(}) s
+5 298 M
+(static char *format_npc\(\)) s
+5 290 M
+({) s
+5 282 M
+(    char npcstring[9];) s
+5 274 M
+(    wstring\(pc_in, 4, 32, npcstring\);) s
+5 266 M
+(    sprintf\(status_msg, "%s", npcstring\);) s
+5 258 M
+(    return status_msg;) s
+5 250 M
+(}) s
+5 242 M
+(#endif /* HAS_GUI */) s
+5 226 M
+(/* Report system state */) s
+5 218 M
+(static void sim_report\(\) {) s
+5 202 M
+(#ifdef HAS_GUI) s
+5 194 M
+(    if \(gui_mode\) {) s
+5 186 M
+(        report_pc\(pc\);) s
+5 178 M
+(        if \(plusmode\) {) s
+5 170 M
+(            report_state\("PREV", format_prev\(\)\);) s
+5 162 M
+(            report_state\("PC", format_pc\(\)\);) s
+5 154 M
+(        } else {) s
+5 146 M
+(            report_state\("OPC", format_pc\(\)\);) s
+5 138 M
+(        }) s
+5 130 M
+(        report_state\("F", format_f\(\)\);) s
+5 122 M
+(        report_state\("D", format_d\(\)\);) s
+5 114 M
+(        report_state\("E", format_e\(\)\);) s
+5 106 M
+(        report_state\("M", format_m\(\)\);) s
+5 98 M
+(        if \(!plusmode\) {) s
+5 90 M
+(            report_state\("NPC", format_npc\(\)\);) s
+5 82 M
+(        }) s
+5 74 M
+(        show_cc\(cc\);) s
+5 66 M
+(    }) s
+5 58 M
+(#endif /* HAS_GUI */) s
+5 42 M
+(}) s
+5 26 M
+(static int initialized = 0;) s
+5 18 M
+(void sim_init\(\)) s
+5 10 M
+({) s
+377 482 M
+(    /* Create memory and register files */) s
+377 474 M
+(    initialized = 1;) s
+377 466 M
+(    mem = init_mem\(MEM_SIZE\);) s
+377 458 M
+(    reg = init_reg\(\);) s
+377 450 M
+(    sim_reset\(\);) s
+377 442 M
+(    clear_mem\(mem\);) s
+377 434 M
+(}) s
+377 418 M
+(void sim_reset\(\)) s
+377 410 M
+({) s
+377 402 M
+(    if \(!initialized\)) s
+377 394 M
+(        sim_init\(\);) s
+377 386 M
+(    clear_mem\(reg\);) s
+377 378 M
+(    minAddr = 0;) s
+377 370 M
+(    memCnt = 0;) s
+377 354 M
+(#ifdef HAS_GUI) s
+377 346 M
+(    if \(gui_mode\) {) s
+377 338 M
+(        signal_register_clear\(\);) s
+377 330 M
+(        create_memory_display\(minAddr, memCnt\);) s
+377 322 M
+(        sim_report\(\);) s
+377 314 M
+(    }) s
+377 306 M
+(#endif) s
+377 290 M
+(    if \(plusmode\) {) s
+377 282 M
+(        prev_icode = prev_icode_in = I_NOP;) s
+377 274 M
+(        prev_ifun = prev_ifun_in = 0;) s
+377 266 M
+(        prev_valc = prev_valc_in = 0;) s
+377 258 M
+(        prev_valm = prev_valm_in = 0;) s
+377 250 M
+(        prev_valp = prev_valp_in = 0;) s
+377 242 M
+(        prev_bcond = prev_bcond_in = FALSE;) s
+377 234 M
+(        pc = 0;) s
+377 226 M
+(    } else {) s
+377 218 M
+(        pc_in = 0;) s
+377 210 M
+(    }) s
+377 202 M
+(    cc = DEFAULT_CC;) s
+377 194 M
+(    cc_in = DEFAULT_CC;) s
+377 186 M
+(    destE = REG_NONE;) s
+377 178 M
+(    destM = REG_NONE;) s
+377 170 M
+(    mem_write = FALSE;) s
+377 162 M
+(    mem_addr = 0;) s
+377 154 M
+(    mem_data = 0;) s
+377 138 M
+(    /* Reset intermediate values to clear display */) s
+377 130 M
+(    icode = I_NOP;) s
+377 122 M
+(    ifun = 0;) s
+377 114 M
+(    instr = HPACK\(I_NOP, F_NONE\);) s
+377 106 M
+(    ra = REG_NONE;) s
+377 98 M
+(    rb = REG_NONE;) s
+377 90 M
+(    valc = 0;) s
+377 82 M
+(    valp = 0;) s
+377 66 M
+(    srcA = REG_NONE;) s
+377 58 M
+(    srcB = REG_NONE;) s
+377 50 M
+(    destE = REG_NONE;) s
+377 42 M
+(    destM = REG_NONE;) s
+377 34 M
+(    vala = 0;) s
+377 26 M
+(    valb = 0;) s
+377 18 M
+(    vale = 0;) s
+377 2 M
+(    cond = FALSE;) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 6 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (6) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(    bcond = FALSE;) s
+5 474 M
+(    valm = 0;) s
+5 458 M
+(    sim_report\(\);) s
+5 450 M
+(}) s
+5 434 M
+(/* Update the processor state */) s
+5 426 M
+(static void update_state\(\)) s
+5 418 M
+({) s
+5 410 M
+(    if \(plusmode\) {) s
+5 402 M
+(        prev_icode = prev_icode_in;) s
+5 394 M
+(        prev_ifun  = prev_ifun_in;) s
+5 386 M
+(        prev_valc  = prev_valc_in;) s
+5 378 M
+(        prev_valm  = prev_valm_in;) s
+5 370 M
+(        prev_valp  = prev_valp_in;) s
+5 362 M
+(        prev_bcond = prev_bcond_in;) s
+5 354 M
+(    } else {) s
+5 346 M
+(        pc = pc_in;) s
+5 338 M
+(    }) s
+5 330 M
+(    cc = cc_in;) s
+5 322 M
+(    /* Writeback */) s
+5 314 M
+(    if \(destE != REG_NONE\)) s
+5 306 M
+(        set_reg_val\(reg, destE, vale\);) s
+5 298 M
+(    if \(destM != REG_NONE\)) s
+5 290 M
+(        set_reg_val\(reg, destM, valm\);) s
+5 274 M
+(    if \(mem_write\) {) s
+5 266 M
+(      /* Should have already tested this address */) s
+5 258 M
+(      set_word_val\(mem, mem_addr, mem_data\);) s
+5 250 M
+(        sim_log\("Wrote 0x%x to address 0x%x\\n", mem_data, mem_addr\);) s
+5 242 M
+(#ifdef HAS_GUI) s
+5 234 M
+(            if \(gui_mode\) {) s
+5 226 M
+(                if \(mem_addr % 4 != 0\) {) s
+5 218 M
+(                    /* Just did a misaligned write.) s
+5 210 M
+(                       Need to display both words */) s
+5 202 M
+(                    word_t align_addr = mem_addr & ~0x3;) s
+5 194 M
+(                    word_t val;) s
+5 186 M
+(                    get_word_val\(mem, align_addr, &val\);) s
+5 178 M
+(                    set_memory\(align_addr, val\);) s
+5 170 M
+(                    align_addr+=4;) s
+5 162 M
+(                    get_word_val\(mem, align_addr, &val\);) s
+5 154 M
+(                    set_memory\(align_addr, val\);) s
+5 146 M
+(                } else {) s
+5 138 M
+(                    set_memory\(mem_addr, mem_data\);) s
+5 130 M
+(                }) s
+5 122 M
+(            }) s
+5 114 M
+(#endif /* HAS_GUI */) s
+5 106 M
+(    }) s
+5 98 M
+(}) s
+5 82 M
+(/* Execute one instruction */) s
+5 74 M
+(/* Return resulting status */) s
+5 66 M
+(static byte_t sim_step\(\)) s
+5 58 M
+({) s
+5 50 M
+(    word_t aluA;) s
+5 42 M
+(    word_t aluB;) s
+5 34 M
+(    word_t alufun;) s
+5 18 M
+(    status = STAT_AOK;) s
+5 10 M
+(    imem_error = dmem_error = FALSE;) s
+377 482 M
+(    update_state\(\); /* Update state from last cycle */) s
+377 466 M
+(    if \(plusmode\) {) s
+377 458 M
+(        pc = gen_pc\(\);) s
+377 450 M
+(    }) s
+377 442 M
+(    valp = pc;) s
+377 434 M
+(    instr = HPACK\(I_NOP, F_NONE\);) s
+377 426 M
+(    imem_error = !get_byte_val\(mem, valp, &instr\);) s
+377 418 M
+(    if \(imem_error\) {) s
+377 410 M
+(        sim_log\("Couldn't fetch at address 0x%x\\n", valp\);) s
+377 402 M
+(    }) s
+377 394 M
+(    imem_icode = HI4\(instr\);) s
+377 386 M
+(    imem_ifun = LO4\(instr\);) s
+377 378 M
+(    icode = gen_icode\(\);) s
+377 370 M
+(    ifun  = gen_ifun\(\);) s
+377 362 M
+(    instr_valid = gen_instr_valid\(\);) s
+377 354 M
+(    valp++;) s
+377 346 M
+(    if \(gen_need_regids\(\)\) {) s
+377 338 M
+(        byte_t regids;) s
+377 330 M
+(        if \(get_byte_val\(mem, valp, &regids\)\) {) s
+377 322 M
+(            ra = GET_RA\(regids\);) s
+377 314 M
+(            rb = GET_RB\(regids\);) s
+377 306 M
+(        } else {) s
+377 298 M
+(            ra = REG_NONE;) s
+377 290 M
+(            rb = REG_NONE;) s
+377 282 M
+(            status = STAT_ADR;) s
+377 274 M
+(            sim_log\("Couldn't fetch at address 0x%x\\n", valp\);) s
+377 266 M
+(        }) s
+377 258 M
+(        valp++;) s
+377 250 M
+(    } else {) s
+377 242 M
+(        ra = REG_NONE;) s
+377 234 M
+(        rb = REG_NONE;) s
+377 226 M
+(    }) s
+377 210 M
+(    if \(gen_need_valC\(\)\) {) s
+377 202 M
+(        if \(get_word_val\(mem, valp, &valc\)\) {) s
+377 194 M
+(        } else {) s
+377 186 M
+(            valc = 0;) s
+377 178 M
+(            status = STAT_ADR;) s
+377 170 M
+(            sim_log\("Couldn't fetch at address 0x%x\\n", valp\);) s
+377 162 M
+(        }) s
+377 154 M
+(        valp+=4;) s
+377 146 M
+(    } else {) s
+377 138 M
+(        valc = 0;) s
+377 130 M
+(    }) s
+377 122 M
+(    sim_log\("IF: Fetched %s at 0x%x.  ra=%s, rb=%s, valC = 0x%x\\n",) s
+377 114 M
+(            iname\(HPACK\(icode,ifun\)\), pc, reg_name\(ra\), reg_name\(rb\), valc\);) s
+377 98 M
+(    if \(status == STAT_AOK && icode == I_HALT\) {) s
+377 90 M
+(        status = STAT_HLT;) s
+377 82 M
+(    }) s
+377 74 M
+(    ) s
+377 66 M
+(    srcA = gen_srcA\(\);) s
+377 58 M
+(    if \(srcA != REG_NONE\) {) s
+377 50 M
+(        vala = get_reg_val\(reg, srcA\);) s
+377 42 M
+(    } else {) s
+377 34 M
+(        vala = 0;) s
+377 26 M
+(    }) s
+377 18 M
+(    ) s
+377 10 M
+(    srcB = gen_srcB\(\);) s
+377 2 M
+(    if \(srcB != REG_NONE\) {) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 7 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (7) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(        valb = get_reg_val\(reg, srcB\);) s
+5 474 M
+(    } else {) s
+5 466 M
+(        valb = 0;) s
+5 458 M
+(    }) s
+5 442 M
+(    cond = cond_holds\(cc, ifun\);) s
+5 426 M
+(    destE = gen_dstE\(\);) s
+5 418 M
+(    destM = gen_dstM\(\);) s
+5 402 M
+(    aluA = gen_aluA\(\);) s
+5 394 M
+(    aluB = gen_aluB\(\);) s
+5 386 M
+(    alufun = gen_alufun\(\);) s
+5 378 M
+(    vale = compute_alu\(alufun, aluA, aluB\);) s
+5 370 M
+(    cc_in = cc;) s
+5 362 M
+(    if \(gen_set_cc\(\)\)) s
+5 354 M
+(        cc_in = compute_cc\(alufun, aluA, aluB\);) s
+5 338 M
+(    bcond =  cond && \(icode == I_JMP\);) s
+5 322 M
+(    mem_addr = gen_mem_addr\(\);) s
+5 314 M
+(    mem_data = gen_mem_data\(\);) s
+5 290 M
+(    if \(gen_mem_read\(\)\) {) s
+5 282 M
+(      dmem_error = dmem_error || !get_word_val\(mem, mem_addr, &valm\);) s
+5 274 M
+(      if \(dmem_error\) {) s
+5 266 M
+(        sim_log\("Couldn't read at address 0x%x\\n", mem_addr\);) s
+5 258 M
+(      }) s
+5 250 M
+(    } else) s
+5 242 M
+(      valm = 0;) s
+5 226 M
+(    mem_write = gen_mem_write\(\);) s
+5 218 M
+(    if \(mem_write\) {) s
+5 210 M
+(      /* Do a test read of the data memory to make sure address is OK */) s
+5 202 M
+(      word_t junk;) s
+5 194 M
+(      dmem_error = dmem_error || !get_word_val\(mem, mem_addr, &junk\);) s
+5 186 M
+(    }) s
+5 170 M
+(    status = gen_Stat\(\);) s
+5 154 M
+(    if \(plusmode\) {) s
+5 146 M
+(        prev_icode_in = icode;) s
+5 138 M
+(        prev_ifun_in = ifun;) s
+5 130 M
+(        prev_valc_in = valc;) s
+5 122 M
+(        prev_valm_in = valm;) s
+5 114 M
+(        prev_valp_in = valp;) s
+5 106 M
+(        prev_bcond_in = bcond;) s
+5 98 M
+(    } else {) s
+5 90 M
+(        /* Update PC */) s
+5 82 M
+(        pc_in = gen_new_pc\(\);) s
+5 74 M
+(    } ) s
+5 66 M
+(    sim_report\(\);) s
+5 58 M
+(    return status;) s
+5 50 M
+(}) s
+5 34 M
+(/*) s
+5 26 M
+(  Run processor until one of following occurs:) s
+5 18 M
+(  - An error status is encountered in WB.) s
+5 10 M
+(  - max_instr instructions have completed through WB) s
+377 482 M
+(  Return number of instructions executed.) s
+377 474 M
+(  if statusp nonnull, then will be set to status of final instruction) s
+377 466 M
+(  if ccp nonnull, then will be set to condition codes of final instruction) s
+377 458 M
+(*/) s
+377 450 M
+(int sim_run\(int max_instr, byte_t *statusp, cc_t *ccp\)) s
+377 442 M
+({) s
+377 434 M
+(    int icount = 0;) s
+377 426 M
+(    byte_t run_status = STAT_AOK;) s
+377 418 M
+(    while \(icount < max_instr\) {) s
+377 410 M
+(        run_status = sim_step\(\);) s
+377 402 M
+(        icount++;) s
+377 394 M
+(        if \(run_status != STAT_AOK\)) s
+377 386 M
+(            break;) s
+377 378 M
+(    }) s
+377 370 M
+(    if \(statusp\)) s
+377 362 M
+(        *statusp = run_status;) s
+377 354 M
+(    if \(ccp\)) s
+377 346 M
+(        *ccp = cc;) s
+377 338 M
+(    return icount;) s
+377 330 M
+(}) s
+377 314 M
+(/* If dumpfile set nonNULL, lots of status info printed out */) s
+377 306 M
+(void sim_set_dumpfile\(FILE *df\)) s
+377 298 M
+({) s
+377 290 M
+(    dumpfile = df;) s
+377 282 M
+(}) s
+377 266 M
+(/*) s
+377 258 M
+( * sim_log dumps a formatted string to the dumpfile, if it exists) s
+377 250 M
+( * accepts variable argument list) s
+377 242 M
+( */) s
+377 234 M
+(void sim_log\( const char *format, ... \) {) s
+377 226 M
+(    if \(dumpfile\) {) s
+377 218 M
+(        va_list arg;) s
+377 210 M
+(        va_start\( arg, format \);) s
+377 202 M
+(        vfprintf\( dumpfile, format, arg \);) s
+377 194 M
+(        va_end\( arg \);) s
+377 186 M
+(    }) s
+377 178 M
+(}) s
+377 154 M
+(/*************************************************************) s
+377 146 M
+( * Part 3: This part contains simulation control for the TK) s
+377 138 M
+( * simulator. ) s
+377 130 M
+( *************************************************************/) s
+377 114 M
+(#ifdef HAS_GUI) s
+377 98 M
+(/**********************) s
+377 90 M
+( * Begin Part 3 globals ) s
+377 82 M
+( **********************/) s
+377 66 M
+(/* Hack for SunOS */) s
+377 58 M
+(extern int matherr\(\);) s
+377 50 M
+(int *tclDummyMathPtr = \(int *\) matherr;) s
+377 34 M
+(static char tcl_msg[256];) s
+377 18 M
+(/* Keep track of the TCL Interpreter */) s
+377 10 M
+(static Tcl_Interp *sim_interp = NULL;) s
+_R
+S
+%%Page: (8) 8
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 8 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (8) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(static mem_t post_load_mem;) s
+5 466 M
+(/**********************) s
+5 458 M
+( * End Part 3 globals   ) s
+5 450 M
+( **********************/) s
+5 426 M
+(/* function prototypes */) s
+5 418 M
+(int simResetCmd\(ClientData clientData, Tcl_Interp *interp,) s
+5 410 M
+(                int argc, char *argv[]\);) s
+5 402 M
+(int simLoadCodeCmd\(ClientData clientData, Tcl_Interp *interp,) s
+5 394 M
+(                   int argc, char *argv[]\);) s
+5 386 M
+(int simLoadDataCmd\(ClientData clientData, Tcl_Interp *interp,) s
+5 378 M
+(                   int argc, char *argv[]\);) s
+5 370 M
+(int simRunCmd\(ClientData clientData, Tcl_Interp *interp,) s
+5 362 M
+(              int argc, char *argv[]\);) s
+5 354 M
+(void addAppCommands\(Tcl_Interp *interp\);) s
+5 338 M
+(/******************************************************************************) s
+5 330 M
+( *      tcl command definitions) s
+5 322 M
+( ******************************************************************************/) s
+5 306 M
+(/* Implement command versions of the simulation functions */) s
+5 298 M
+(int simResetCmd\(ClientData clientData, Tcl_Interp *interp,) s
+5 290 M
+(                int argc, char *argv[]\)) s
+5 282 M
+({) s
+5 274 M
+(    sim_interp = interp;) s
+5 266 M
+(    if \(argc != 1\) {) s
+5 258 M
+(        interp->result = "No arguments allowed";) s
+5 250 M
+(        return TCL_ERROR;) s
+5 242 M
+(    }) s
+5 234 M
+(    sim_reset\(\);) s
+5 226 M
+(    if \(post_load_mem\) {) s
+5 218 M
+(        free_mem\(mem\);) s
+5 210 M
+(        mem = copy_mem\(post_load_mem\);) s
+5 202 M
+(    }) s
+5 194 M
+(    interp->result = stat_name\(STAT_AOK\);) s
+5 186 M
+(    return TCL_OK;) s
+5 178 M
+(}) s
+5 162 M
+(int simLoadCodeCmd\(ClientData clientData, Tcl_Interp *interp,) s
+5 154 M
+(                   int argc, char *argv[]\)) s
+5 146 M
+({) s
+5 138 M
+(    FILE *object_file;) s
+5 130 M
+(    int code_count;) s
+5 122 M
+(    sim_interp = interp;) s
+5 114 M
+(    if \(argc != 2\) {) s
+5 106 M
+(        interp->result = "One argument required";) s
+5 98 M
+(        return TCL_ERROR;) s
+5 90 M
+(    }) s
+5 82 M
+(    object_file = fopen\(argv[1], "r"\);) s
+5 74 M
+(    if \(!object_file\) {) s
+5 66 M
+(        sprintf\(tcl_msg, "Couldn't open code file '%s'", argv[1]\);) s
+5 58 M
+(        interp->result = tcl_msg;) s
+5 50 M
+(        return TCL_ERROR;) s
+5 42 M
+(    }) s
+5 34 M
+(    sim_reset\(\);) s
+5 26 M
+(    code_count = load_mem\(mem, object_file, 0\);) s
+5 18 M
+(    post_load_mem = copy_mem\(mem\);) s
+5 10 M
+(    sprintf\(tcl_msg, "%d", code_count\);) s
+5 2 M
+(    interp->result = tcl_msg;) s
+377 482 M
+(    fclose\(object_file\);) s
+377 474 M
+(    return TCL_OK;) s
+377 466 M
+(}) s
+377 450 M
+(int simLoadDataCmd\(ClientData clientData, Tcl_Interp *interp,) s
+377 442 M
+(                   int argc, char *argv[]\)) s
+377 434 M
+({) s
+377 426 M
+(    FILE *data_file;) s
+377 418 M
+(    int word_count = 0;) s
+377 410 M
+(    interp->result = "Not implemented";) s
+377 402 M
+(    return TCL_ERROR;) s
+377 378 M
+(    sim_interp = interp;) s
+377 370 M
+(    if \(argc != 2\) {) s
+377 362 M
+(        interp->result = "One argument required";) s
+377 354 M
+(        return TCL_ERROR;) s
+377 346 M
+(    }) s
+377 338 M
+(    data_file = fopen\(argv[1], "r"\);) s
+377 330 M
+(    if \(!data_file\) {) s
+377 322 M
+(        sprintf\(tcl_msg, "Couldn't open data file '%s'", argv[1]\);) s
+377 314 M
+(        interp->result = tcl_msg;) s
+377 306 M
+(        return TCL_ERROR;) s
+377 298 M
+(    }) s
+377 290 M
+(    sprintf\(tcl_msg, "%d", word_count\);) s
+377 282 M
+(    interp->result = tcl_msg;) s
+377 274 M
+(    fclose\(data_file\);) s
+377 266 M
+(    return TCL_OK;) s
+377 258 M
+(}) s
+377 234 M
+(int simRunCmd\(ClientData clientData, Tcl_Interp *interp,) s
+377 226 M
+(              int argc, char *argv[]\)) s
+377 218 M
+({) s
+377 210 M
+(    int step_limit = 1;) s
+377 202 M
+(    byte_t run_status;) s
+377 194 M
+(    cc_t cc;) s
+377 186 M
+(    sim_interp = interp;) s
+377 178 M
+(    if \(argc > 2\) {) s
+377 170 M
+(        interp->result = "At most one argument allowed";) s
+377 162 M
+(        return TCL_ERROR;) s
+377 154 M
+(    }) s
+377 146 M
+(    if \(argc >= 2 &&) s
+377 138 M
+(        \(sscanf\(argv[1], "%d", &step_limit\) != 1 ||) s
+377 130 M
+(         step_limit < 0\)\) {) s
+377 122 M
+(        sprintf\(tcl_msg, "Cannot run for '%s' cycles!", argv[1]\);) s
+377 114 M
+(        interp->result = tcl_msg;) s
+377 106 M
+(        return TCL_ERROR;) s
+377 98 M
+(    }) s
+377 90 M
+(    sim_run\(step_limit, &run_status, &cc\);) s
+377 82 M
+(    interp->result = stat_name\(run_status\);) s
+377 74 M
+(    return TCL_OK;) s
+377 66 M
+(}) s
+377 50 M
+(/******************************************************************************) s
+377 42 M
+( *      registering the commands with tcl) s
+377 34 M
+( ******************************************************************************/) s
+377 18 M
+(void addAppCommands\(Tcl_Interp *interp\)) s
+377 10 M
+({) s
+377 2 M
+(    sim_interp = interp;) s
+_R
+S
+%%Page: (9) 9
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 9 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (9) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(    Tcl_CreateCommand\(interp, "simReset", \(Tcl_CmdProc *\) simResetCmd,) s
+5 474 M
+(                      \(ClientData\) NULL, \(Tcl_CmdDeleteProc *\) NULL\);) s
+5 466 M
+(    Tcl_CreateCommand\(interp, "simCode", \(Tcl_CmdProc *\) simLoadCodeCmd,) s
+5 458 M
+(                      \(ClientData\) NULL, \(Tcl_CmdDeleteProc *\) NULL\);) s
+5 450 M
+(    Tcl_CreateCommand\(interp, "simData", \(Tcl_CmdProc *\) simLoadDataCmd,) s
+5 442 M
+(                      \(ClientData\) NULL, \(Tcl_CmdDeleteProc *\) NULL\);) s
+5 434 M
+(    Tcl_CreateCommand\(interp, "simRun", \(Tcl_CmdProc *\) simRunCmd,) s
+5 426 M
+(                      \(ClientData\) NULL, \(Tcl_CmdDeleteProc *\) NULL\);) s
+5 418 M
+(} ) s
+5 402 M
+(/******************************************************************************) s
+5 394 M
+( *      tcl functionality called from within C) s
+5 386 M
+( ******************************************************************************/) s
+5 370 M
+(/* Provide mechanism for simulator to update register display */) s
+5 362 M
+(void signal_register_update\(reg_id_t r, word_t val\) {) s
+5 354 M
+(    int code;) s
+5 346 M
+(    sprintf\(tcl_msg, "setReg %d %d 1", \(int\) r, \(int\) val\);) s
+5 338 M
+(    code = Tcl_Eval\(sim_interp, tcl_msg\);) s
+5 330 M
+(    if \(code != TCL_OK\) {) s
+5 322 M
+(        fprintf\(stderr, "Failed to signal register set\\n"\);) s
+5 314 M
+(        fprintf\(stderr, "Error Message was '%s'\\n", sim_interp->result\);) s
+5 306 M
+(    }) s
+5 298 M
+(}) s
+5 282 M
+(/* Provide mechanism for simulator to generate memory display */) s
+5 274 M
+(void create_memory_display\(\) {) s
+5 266 M
+(    int code;) s
+5 258 M
+(    sprintf\(tcl_msg, "createMem %d %d", minAddr, memCnt\);) s
+5 250 M
+(    code = Tcl_Eval\(sim_interp, tcl_msg\);) s
+5 242 M
+(    if \(code != TCL_OK\) {) s
+5 234 M
+(        fprintf\(stderr, "Command '%s' failed\\n", tcl_msg\);) s
+5 226 M
+(        fprintf\(stderr, "Error Message was '%s'\\n", sim_interp->result\);) s
+5 218 M
+(    } else {) s
+5 210 M
+(        int i;) s
+5 202 M
+(        for \(i = 0; i < memCnt && code == TCL_OK; i+=4\) {) s
+5 194 M
+(            int addr = minAddr+i;) s
+5 186 M
+(            int val;) s
+5 178 M
+(            if \(!get_word_val\(mem, addr, &val\)\) {) s
+5 170 M
+(                fprintf\(stderr, "Out of bounds memory display\\n"\);) s
+5 162 M
+(                return;) s
+5 154 M
+(            }) s
+5 146 M
+(            sprintf\(tcl_msg, "setMem %d %d", addr, val\);) s
+5 138 M
+(            code = Tcl_Eval\(sim_interp, tcl_msg\);) s
+5 130 M
+(        }) s
+5 122 M
+(        if \(code != TCL_OK\) {) s
+5 114 M
+(            fprintf\(stderr, "Couldn't set memory value\\n"\);) s
+5 106 M
+(            fprintf\(stderr, "Error Message was '%s'\\n", sim_interp->result\);) s
+5 98 M
+(        }) s
+5 90 M
+(    }) s
+5 82 M
+(}) s
+5 66 M
+(/* Provide mechanism for simulator to update memory value */) s
+5 58 M
+(void set_memory\(int addr, int val\) {) s
+5 50 M
+(    int code;) s
+5 42 M
+(    int nminAddr = minAddr;) s
+5 34 M
+(    int nmemCnt = memCnt;) s
+5 18 M
+(    /* First see if we need to expand memory range */) s
+5 10 M
+(    if \(memCnt == 0\) {) s
+5 2 M
+(        nminAddr = addr;) s
+377 482 M
+(        memCnt = 4;) s
+377 474 M
+(    } else if \(addr < minAddr\) {) s
+377 466 M
+(        nminAddr = addr;) s
+377 458 M
+(        nmemCnt = minAddr + memCnt - addr;) s
+377 450 M
+(    } else if \(addr >= minAddr+memCnt\) {) s
+377 442 M
+(        nmemCnt = addr-minAddr+4;) s
+377 434 M
+(    }) s
+377 426 M
+(    /* Now make sure nminAddr & nmemCnt are multiples of 16 */) s
+377 418 M
+(    nmemCnt = \(\(nminAddr & 0xF\) + nmemCnt + 0xF\) & ~0xF;) s
+377 410 M
+(    nminAddr = nminAddr & ~0xF;) s
+377 394 M
+(    if \(nminAddr != minAddr || nmemCnt != memCnt\) {) s
+377 386 M
+(        minAddr = nminAddr;) s
+377 378 M
+(        memCnt = nmemCnt;) s
+377 370 M
+(        create_memory_display\(\);) s
+377 362 M
+(    } else {) s
+377 354 M
+(        sprintf\(tcl_msg, "setMem %d %d", addr, val\);) s
+377 346 M
+(        code = Tcl_Eval\(sim_interp, tcl_msg\);) s
+377 338 M
+(        if \(code != TCL_OK\) {) s
+377 330 M
+(            fprintf\(stderr, "Couldn't set memory value 0x%x to 0x%x\\n",) s
+377 322 M
+(                    addr, val\);) s
+377 314 M
+(            fprintf\(stderr, "Error Message was '%s'\\n", sim_interp->result\);) s
+377 306 M
+(        }) s
+377 298 M
+(    }) s
+377 290 M
+(}) s
+377 274 M
+(/* Provide mechanism for simulator to update condition code display */) s
+377 266 M
+(void show_cc\(cc_t cc\)) s
+377 258 M
+({) s
+377 250 M
+(    int code;) s
+377 242 M
+(    sprintf\(tcl_msg, "setCC %d %d %d",) s
+377 234 M
+(            GET_ZF\(cc\), GET_SF\(cc\), GET_OF\(cc\)\);) s
+377 226 M
+(    code = Tcl_Eval\(sim_interp, tcl_msg\);) s
+377 218 M
+(    if \(code != TCL_OK\) {) s
+377 210 M
+(        fprintf\(stderr, "Failed to display condition codes\\n"\);) s
+377 202 M
+(        fprintf\(stderr, "Error Message was '%s'\\n", sim_interp->result\);) s
+377 194 M
+(    }) s
+377 186 M
+(}) s
+377 170 M
+(/* Provide mechanism for simulator to clear register display */) s
+377 162 M
+(void signal_register_clear\(\) {) s
+377 154 M
+(    int code;) s
+377 146 M
+(    code = Tcl_Eval\(sim_interp, "clearReg"\);) s
+377 138 M
+(    if \(code != TCL_OK\) {) s
+377 130 M
+(        fprintf\(stderr, "Failed to signal register clear\\n"\);) s
+377 122 M
+(        fprintf\(stderr, "Error Message was '%s'\\n", sim_interp->result\);) s
+377 114 M
+(    }) s
+377 106 M
+(}) s
+377 90 M
+(/* Provide mechanism for simulator to report instructions as they are ) s
+377 82 M
+(   read in) s
+377 74 M
+(*/) s
+377 58 M
+(void report_line\(int line_no, int addr, char *hex, char *text\) {) s
+377 50 M
+(    int code;) s
+377 42 M
+(    sprintf\(tcl_msg, "addCodeLine %d %d {%s} {%s}", line_no, addr, hex, text\);) s
+377 34 M
+(    code = Tcl_Eval\(sim_interp, tcl_msg\);) s
+377 26 M
+(    if \(code != TCL_OK\) {) s
+377 18 M
+(        fprintf\(stderr, "Failed to report code line 0x%x\\n", addr\);) s
+377 10 M
+(        fprintf\(stderr, "Error Message was '%s'\\n", sim_interp->result\);) s
+377 2 M
+(    }) s
+_R
+S
+%%Page: (10) 10
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 10 def
+/fname (ssim.c) def
+/fdir () def
+/ftail (ssim.c) def
+% User defined strings:
+/fmodstr (Thu Jun 21 09:37:21 2012) def
+/pagenumstr (10) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(}) s
+5 458 M
+(/* Provide mechanism for simulator to report which instruction) s
+5 450 M
+(   is being executed */) s
+5 442 M
+(void report_pc\(unsigned pc\)) s
+5 434 M
+({) s
+5 426 M
+(    int t_status;) s
+5 418 M
+(    char addr[10];) s
+5 410 M
+(    char code[12];) s
+5 402 M
+(    Tcl_DString cmd;) s
+5 394 M
+(    Tcl_DStringInit\(&cmd\);) s
+5 386 M
+(    Tcl_DStringAppend\(&cmd, "simLabel ", -1\);) s
+5 378 M
+(    Tcl_DStringStartSublist\(&cmd\);) s
+5 370 M
+(    sprintf\(addr, "%u", pc\);) s
+5 362 M
+(    Tcl_DStringAppendElement\(&cmd, addr\);) s
+5 346 M
+(    Tcl_DStringEndSublist\(&cmd\);) s
+5 338 M
+(    Tcl_DStringStartSublist\(&cmd\);) s
+5 330 M
+(    sprintf\(code, "%s","*"\);) s
+5 322 M
+(    Tcl_DStringAppend\(&cmd, code, -1\);) s
+5 314 M
+(    Tcl_DStringEndSublist\(&cmd\);) s
+5 306 M
+(    t_status = Tcl_Eval\(sim_interp, Tcl_DStringValue\(&cmd\)\);) s
+5 298 M
+(    if \(t_status != TCL_OK\) {) s
+5 290 M
+(        fprintf\(stderr, "Failed to report code '%s'\\n", code\);) s
+5 282 M
+(        fprintf\(stderr, "Error Message was '%s'\\n", sim_interp->result\);) s
+5 274 M
+(    }) s
+5 266 M
+(}) s
+5 250 M
+(/* Report single line of stage state */) s
+5 242 M
+(void report_state\(char *id, char *txt\)) s
+5 234 M
+({) s
+5 226 M
+(    int t_status;) s
+5 218 M
+(    sprintf\(tcl_msg, "updateStage %s {%s}", id, txt\);) s
+5 210 M
+(    t_status = Tcl_Eval\(sim_interp, tcl_msg\);) s
+5 202 M
+(    if \(t_status != TCL_OK\) {) s
+5 194 M
+(        fprintf\(stderr, "Failed to report processor status\\n"\);) s
+5 186 M
+(        fprintf\(stderr, "\\tStage %s, status '%s'\\n",) s
+5 178 M
+(                id, txt\);) s
+5 170 M
+(        fprintf\(stderr, "\\tError Message was '%s'\\n", sim_interp->result\);) s
+5 162 M
+(    }) s
+5 154 M
+(}) s
+5 138 M
+(/*) s
+5 130 M
+( * Tcl_AppInit - Called by TCL to perform application-specific initialization.) s
+5 122 M
+( */) s
+5 114 M
+(int Tcl_AppInit\(Tcl_Interp *interp\)) s
+5 106 M
+({) s
+5 98 M
+(    /* Tell TCL about the name of the simulator so it can  */) s
+5 90 M
+(    /* use it as the title of the main window */) s
+5 82 M
+(    Tcl_SetVar\(interp, "simname", simname, TCL_GLOBAL_ONLY\);) s
+5 66 M
+(    if \(Tcl_Init\(interp\) == TCL_ERROR\)) s
+5 58 M
+(        return TCL_ERROR;) s
+5 50 M
+(    if \(Tk_Init\(interp\) == TCL_ERROR\)) s
+5 42 M
+(        return TCL_ERROR;) s
+5 34 M
+(    Tcl_StaticPackage\(interp, "Tk", Tk_Init, Tk_SafeInit\);) s
+5 18 M
+(    /* Call procedure to add new commands */) s
+5 10 M
+(    addAppCommands\(interp\);) s
+377 482 M
+(    /*) s
+377 474 M
+(     * Specify a user-specific startup file to invoke if the application) s
+377 466 M
+(     * is run interactively.  Typically the startup file is "~/.apprc") s
+377 458 M
+(     * where "app" is the name of the application.  If this line is deleted) s
+377 450 M
+(     * then no user-specific startup file will be run under any conditions.) s
+377 442 M
+(     */) s
+377 434 M
+(    Tcl_SetVar\(interp, "tcl_rcFileName", "~/.wishrc", TCL_GLOBAL_ONLY\);) s
+377 426 M
+(    return TCL_OK;) s
+377 410 M
+(}) s
+377 394 M
+( ) s
+377 386 M
+(#endif /* HAS_GUI */) s
+_R
+S
+%%Page: (1) 11
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 1 def
+/fname (seq.tcl) def
+/fdir () def
+/ftail (seq.tcl) def
+% User defined strings:
+/fmodstr (Wed Sep 09 11:39:59 2009) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 474 M
+(##########################################################################) s
+5 466 M
+(# Parsing of command line flags                                          #) s
+5 458 M
+(##########################################################################) s
+5 442 M
+(proc flagVal {flag default} {) s
+5 434 M
+(    global argv) s
+5 426 M
+(    foreach t $argv {) s
+5 418 M
+(        if {[string match "-$flag*" $t]} {return [string range $t 2 end]}) s
+5 410 M
+(    }) s
+5 402 M
+(    return $default) s
+5 394 M
+(}) s
+5 378 M
+(proc findFlag {flag} {) s
+5 370 M
+(    global argv) s
+5 362 M
+(    foreach t $argv {) s
+5 354 M
+(        if {[string match "-$flag" $t]} {return 1}) s
+5 346 M
+(    }) s
+5 338 M
+(    return 0) s
+5 330 M
+(}) s
+5 314 M
+(##########################################################################) s
+5 306 M
+(# Register File Implementation.  Shown as array of 8 columns             #) s
+5 298 M
+(##########################################################################) s
+5 274 M
+(# Font used to display register contents) s
+5 266 M
+(set fontSize [expr 10 * [flagVal "f" 12]]) s
+5 258 M
+(set codeFontSize [expr 10 * [flagVal "c" 10]]) s
+5 250 M
+(set labFontSize [expr 10 * [flagVal "l" 10]]) s
+5 242 M
+(set bigFontSize [expr 10 * [flagVal "b" 16]]) s
+5 234 M
+(set dpyFont "*-courier-medium-r-normal--*-$fontSize-*-*-*-*-*-*") s
+5 226 M
+(set labFont "*-helvetica-medium-r-normal--*-$labFontSize-*-*-*-*-*-*") s
+5 218 M
+(set bigLabFont "*-helvetica-bold-r-normal--*-$bigFontSize-*-*-*-*-*-*") s
+5 210 M
+(set codeFont "*-courier-medium-r-normal--*-$codeFontSize-*-*-*-*-*-*") s
+5 202 M
+(# Background Color of normal register) s
+5 194 M
+(set normalBg white) s
+5 186 M
+(# Background Color of highlighted register) s
+5 178 M
+(set specialBg LightSkyBlue) s
+5 162 M
+(# Height of titles separating major sections of control panel) s
+5 154 M
+(set sectionHeight 2) s
+5 138 M
+(# How many rows of code do I display) s
+5 130 M
+(set codeRowCount [flagVal "r" 50]) s
+5 114 M
+(# Keep track of previous highlighted register) s
+5 106 M
+(set lastId -1) s
+5 98 M
+(proc setReg {id val highlight} {) s
+5 90 M
+(    global lastId normalBg specialBg) s
+5 82 M
+(    if {$lastId >= 0} {) s
+5 74 M
+(        .r.reg$lastId config -bg $normalBg) s
+5 66 M
+(        set lastId -1) s
+5 58 M
+(    }) s
+5 50 M
+(    if {$id < 0 || $id >= 8} {) s
+5 42 M
+(        error "Invalid Register \($id\)") s
+5 34 M
+(    }) s
+5 26 M
+(    .r.reg$id config -text [format %8x $val]) s
+5 18 M
+(    if {$highlight} {) s
+5 10 M
+(        uplevel .r.reg$id config -bg $specialBg) s
+5 2 M
+(        set lastId $id) s
+377 482 M
+(    }) s
+377 474 M
+(}) s
+377 458 M
+(# Clear all registers) s
+377 450 M
+(proc clearReg {} {) s
+377 442 M
+(    global lastId normalBg) s
+377 434 M
+(    if {$lastId >= 0} {) s
+377 426 M
+(        .r.reg$lastId config -bg $normalBg) s
+377 418 M
+(        set lastId -1) s
+377 410 M
+(    } ) s
+377 402 M
+(    for {set i 0} {$i < 8} {incr i 1} {) s
+377 394 M
+(        .r.reg$i config -text "") s
+377 386 M
+(    }) s
+377 378 M
+(}) s
+377 362 M
+(# Set all 3 condition codes) s
+377 354 M
+(proc setCC {zv cv ov} {) s
+377 346 M
+(    .cc.cc0 config -text [format %d $zv]) s
+377 338 M
+(    .cc.cc1 config -text [format %d $cv]) s
+377 330 M
+(    .cc.cc2 config -text [format %d $ov]) s
+377 322 M
+(}) s
+377 298 M
+(### Create display for misc. state) s
+377 290 M
+(frame .flags) s
+377 282 M
+(pack .flags -in . -side bottom) s
+377 266 M
+(##############################################################################) s
+377 258 M
+(# Status Display                                                             #) s
+377 250 M
+(##############################################################################) s
+377 234 M
+(set simStat "AOK") s
+377 226 M
+(# Line to display simulation status) s
+377 218 M
+(frame .stat) s
+377 210 M
+(pack .stat -in .flags -side left) s
+377 202 M
+(label .stat.statlab -width 7 -text "Stat" -font $bigLabFont -height $sectionHeight) s
+377 194 M
+(label .stat.statdpy -width 3 -font $dpyFont -relief ridge -bg white -textvariable simS) s
+377 186 M
+(tat) s
+377 178 M
+(label .stat.fill -width 6 -text "") s
+377 170 M
+(pack .stat.statlab .stat.statdpy .stat.fill  -in .stat -side left) s
+377 162 M
+(##############################################################################) s
+377 154 M
+(# Condition Code Display                                                     #) s
+377 146 M
+(##############################################################################) s
+377 138 M
+(# Create Window for condition codes) s
+377 130 M
+(frame .cc) s
+377 122 M
+(pack .cc -in .flags -side right) s
+377 106 M
+(label .cc.lab -text "Condition Codes" -font $bigLabFont -height $sectionHeight) s
+377 98 M
+(pack .cc.lab -in .cc -side left) s
+377 74 M
+(set ccnames [list "Z" "S" "O"]) s
+377 58 M
+(# Create Row of CC Labels) s
+377 50 M
+(for {set i 0} {$i < 3} {incr i 1} {) s
+377 42 M
+(    label .cc.lab$i -width 1 -font $dpyFont -text [lindex $ccnames $i]) s
+377 34 M
+(    pack .cc.lab$i -in .cc -side left) s
+377 26 M
+(    label .cc.cc$i -width 1 -font $dpyFont -relief ridge -bg $normalBg) s
+377 18 M
+(    pack .cc.cc$i -in .cc -side left) s
+377 10 M
+(}) s
+_R
+S
+%%Page: (2) 12
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 2 def
+/fname (seq.tcl) def
+/fdir () def
+/ftail (seq.tcl) def
+% User defined strings:
+/fmodstr (Wed Sep 09 11:39:59 2009) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(##############################################################################) s
+5 474 M
+(# Register Display                                                           #     ) s
+5 466 M
+(##############################################################################) s
+5 442 M
+(# Create Window for registers) s
+5 434 M
+(frame .r) s
+5 426 M
+(pack .r -in . -side bottom) s
+5 418 M
+(# Following give separate window for register file) s
+5 410 M
+(# toplevel .r) s
+5 402 M
+(# wm title .r "Register File") s
+5 394 M
+(label .r.lab -text "Register File" -font $bigLabFont -height $sectionHeight) s
+5 386 M
+(pack .r.lab -in .r -side top) s
+5 378 M
+(# Set up top row control panel \(disabled\)) s
+5 370 M
+(# frame .r.cntl) s
+5 362 M
+(# pack .r.cntl -fill x -in .r) s
+5 354 M
+(# label .r.labreg -text "Register" -width 10) s
+5 346 M
+(# entry .r.regid -width 3 -relief sunken -textvariable regId -font $dpyFont) s
+5 338 M
+(# label .r.labval -text "Value" -width 10) s
+5 330 M
+(# entry .r.regval -width 8 -relief sunken -textvariable regVal -font $dpyFont) s
+5 322 M
+(# button .r.doset -text "Set" -command {setReg $regId $regVal 1} -width 6) s
+5 314 M
+(# button .r.c -text "Clear" -command clearReg -width 6) s
+5 306 M
+(# pack .r.labreg .r.regid .r.labval .r.regval .r.doset .r.c  -in .r.cntl -side left) s
+5 290 M
+(set regnames [list "%eax" "%ecx" "%edx" "%ebx" "%esp" "%ebp" "%esi" "%edi"]) s
+5 274 M
+(# Create Row of Register Labels) s
+5 266 M
+(frame .r.labels) s
+5 258 M
+(pack .r.labels -side top -in .r) s
+5 242 M
+(for {set i 0} {$i < 8} {incr i 1} {) s
+5 234 M
+(    label .r.lab$i -width 8 -font $dpyFont -text [lindex $regnames $i]) s
+5 226 M
+(    pack .r.lab$i -in .r.labels -side left) s
+5 218 M
+(}) s
+5 202 M
+(# Create Row of Register Entries) s
+5 194 M
+(frame .r.row) s
+5 186 M
+(pack .r.row -side top -in .r) s
+5 162 M
+(# Create 8 registers) s
+5 154 M
+(for {set i 0} {$i < 8} {incr i 1} {) s
+5 146 M
+(    label .r.reg$i -width 8 -font $dpyFont -relief ridge \\) s
+5 138 M
+(            -bg $normalBg) s
+5 130 M
+(    pack .r.reg$i -in .r.row -side left) s
+5 122 M
+(}) s
+5 98 M
+(##############################################################################) s
+5 90 M
+(#  Main Control Panel                                                        #) s
+5 82 M
+(##############################################################################) s
+5 66 M
+(#) s
+5 58 M
+(# Set the simulator name \(defined in simname in ssim.c\) ) s
+5 50 M
+(# as the title of the main window) s
+5 42 M
+(#) s
+5 34 M
+(wm title . $simname) s
+5 18 M
+(# Control Panel for simulator) s
+5 10 M
+(set cntlBW 9) s
+5 2 M
+(frame .cntl) s
+377 482 M
+(pack .cntl) s
+377 474 M
+(button .cntl.quit -width $cntlBW -text Quit -command exit) s
+377 466 M
+(button .cntl.run -width $cntlBW -text Go -command simGo) s
+377 458 M
+(button .cntl.stop -width $cntlBW -text Stop -command simStop) s
+377 450 M
+(button .cntl.step -width $cntlBW -text Step -command simStep) s
+377 442 M
+(button .cntl.reset -width $cntlBW -text Reset -command simResetAll) s
+377 434 M
+(pack .cntl.quit .cntl.run .cntl.stop .cntl.step .cntl.reset -in .cntl -side left) s
+377 426 M
+(# Simulation speed control) s
+377 418 M
+(scale .spd -label {Simulator Speed \(10*log Hz\)} -from -10 -to 30 -length 10c \\) s
+377 410 M
+(  -orient horizontal -command setSpeed) s
+377 402 M
+(pack .spd) s
+377 386 M
+(# Simulation mode ) s
+377 378 M
+(set simMode forward) s
+377 362 M
+(# frame .md) s
+377 354 M
+(# pack .md) s
+377 346 M
+(# radiobutton .md.wedged -text Wedged -variable simMode \\) s
+377 338 M
+(#       -value wedged -width 10 -command {setSimMode wedged}) s
+377 330 M
+(# radiobutton .md.stall -text Stall -variable simMode \\) s
+377 322 M
+(#       -value stall -width 10 -command {setSimMode stall}) s
+377 314 M
+(# radiobutton .md.forward -text Forward -variable simMode \\) s
+377 306 M
+(#       -value forward -width 10 -command {setSimMode forward}) s
+377 298 M
+(# pack .md.wedged .md.stall .md.forward -in .md -side left) s
+377 282 M
+(# simDelay defines #milliseconds for each cycle of simulator) s
+377 274 M
+(# Initial value is 1000ms) s
+377 266 M
+(set simDelay 1000) s
+377 258 M
+(# Set delay based on rate expressed in log\(Hz\)) s
+377 250 M
+(proc setSpeed {rate} {) s
+377 242 M
+(  global simDelay) s
+377 234 M
+(  set simDelay [expr round\(1000 / pow\(10,$rate/10.0\)\)]) s
+377 226 M
+(}) s
+377 210 M
+(# Global variables controlling simulator execution) s
+377 202 M
+(# Should simulator be running now?) s
+377 194 M
+(set simGoOK 0) s
+377 178 M
+(proc simStop  {} {) s
+377 170 M
+(  global simGoOK) s
+377 162 M
+(  set simGoOK 0) s
+377 154 M
+(}) s
+377 138 M
+(proc simStep {} {) s
+377 130 M
+(    global simStat) s
+377 122 M
+(    set simStat [simRun 1]) s
+377 114 M
+(}) s
+377 98 M
+(proc simGo {} {) s
+377 90 M
+(    global simGoOK simDelay simStat) s
+377 82 M
+(    set simGoOK 1) s
+377 74 M
+(    # Disable the Go and Step buttons) s
+377 66 M
+(    # Enable the Stop button) s
+377 58 M
+(    while {$simGoOK} {) s
+377 50 M
+(        # run the simulator 1 cycle) s
+377 42 M
+(        after $simDelay) s
+377 34 M
+(        set simStat [simRun 1]) s
+377 26 M
+(        if {$simStat != "AOK" && $simStat != "BUB"} {set simGoOK 0}) s
+377 18 M
+(        update) s
+377 10 M
+(    }) s
+377 2 M
+(    # Disable the Stop button) s
+_R
+S
+%%Page: (3) 13
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 3 def
+/fname (seq.tcl) def
+/fdir () def
+/ftail (seq.tcl) def
+% User defined strings:
+/fmodstr (Wed Sep 09 11:39:59 2009) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(    # Enable the Go and Step buttons) s
+5 474 M
+(}) s
+5 458 M
+(##############################################################################) s
+5 450 M
+(#  Processor State display                                                   #) s
+5 442 M
+(##############################################################################) s
+5 426 M
+(# Overall width of pipe register display) s
+5 418 M
+(set procWidth 40) s
+5 410 M
+(set procHeight 1) s
+5 402 M
+(set labWidth 8) s
+5 386 M
+(# Add labeled display to window ) s
+5 378 M
+(proc addDisp {win width name} {) s
+5 370 M
+(    global dpyFont labFont) s
+5 362 M
+(    set lname [string tolower $name]) s
+5 354 M
+(    frame $win.$lname) s
+5 346 M
+(    pack $win.$lname -in $win -side left) s
+5 338 M
+(    label $win.$lname.t -text $name -font $labFont) s
+5 330 M
+(    label $win.$lname.c -width $width -font $dpyFont -bg white -relief ridge) s
+5 322 M
+(    pack $win.$lname.t $win.$lname.c -in $win.$lname -side top) s
+5 314 M
+(    return [list $win.$lname.c]) s
+5 306 M
+(}) s
+5 290 M
+(# Set text in display row) s
+5 282 M
+(proc setDisp {wins txts} {) s
+5 274 M
+(    for {set i 0} {$i < [llength $wins] && $i < [llength $txts]} {incr i} {) s
+5 266 M
+(        set win [lindex $wins $i]) s
+5 258 M
+(        set txt [lindex $txts $i]) s
+5 250 M
+(        $win config -text $txt) s
+5 242 M
+(    }) s
+5 234 M
+(}) s
+5 218 M
+(frame .p -width $procWidth ) s
+5 210 M
+(pack .p -in . -side bottom) s
+5 202 M
+(label .p.lab -text "Processor State" -font $bigLabFont -height $sectionHeight) s
+5 194 M
+(pack .p.lab -in .p -side top) s
+5 186 M
+(label .p.pc -text "PC Update Stage" -height $procHeight -font $bigLabFont -width $proc) s
+5 178 M
+(Width -bg NavyBlue -fg White) s
+5 170 M
+(#label .p.wb -text "Writeback Stage" -height $procHeight -font $bigLabFont -width $pro) s
+5 162 M
+(cWidth -bg NavyBlue -fg White) s
+5 154 M
+(label .p.mem -text "Memory Stage" -height $procHeight -font $bigLabFont -width $procWi) s
+5 146 M
+(dth -bg NavyBlue -fg White) s
+5 138 M
+(label .p.ex -text "Execute Stage" -height $procHeight -font $bigLabFont -width $procWi) s
+5 130 M
+(dth -bg NavyBlue -fg White) s
+5 122 M
+(label .p.id -text "Decode Stage" -height $procHeight -font $bigLabFont -width $procWid) s
+5 114 M
+(th -bg NavyBlue -fg White) s
+5 106 M
+(label .p.if -text "Fetch Stage" -height $procHeight -font $bigLabFont -width $procWidt) s
+5 98 M
+(h -bg NavyBlue -fg White) s
+5 90 M
+(# New PC) s
+5 82 M
+(frame .p.npc) s
+5 74 M
+(# Mem) s
+5 66 M
+(frame .p.m) s
+5 58 M
+(# Execute) s
+5 50 M
+(frame .p.e) s
+5 42 M
+(# Decode) s
+5 34 M
+(frame .p.d) s
+5 26 M
+(# Fetch) s
+5 18 M
+(frame .p.f) s
+5 10 M
+(# Old PC) s
+5 2 M
+(frame .p.opc) s
+377 482 M
+(pack .p.npc .p.pc .p.m .p.mem .p.e .p.ex .p.d .p.id .p.f .p.if .p.opc -in .p -side top) s
+377 474 M
+( -anchor w -expand 1) s
+377 458 M
+(# Take list of lists, and transpose nesting) s
+377 450 M
+(# Assumes all lists are of same length) s
+377 442 M
+(proc ltranspose {inlist} {) s
+377 434 M
+(    set result {}) s
+377 426 M
+(    for {set i 0} {$i < [llength [lindex $inlist 0]]} {incr i} {) s
+377 418 M
+(        set nlist {}) s
+377 410 M
+(        for {set j 0} {$j < [llength $inlist]} {incr j} {) s
+377 402 M
+(            set ele [lindex [lindex $inlist $j] $i]) s
+377 394 M
+(            set nlist [concat $nlist [list $ele]]) s
+377 386 M
+(        }) s
+377 378 M
+(        set result [concat $result [list $nlist]]) s
+377 370 M
+(    }) s
+377 362 M
+(    return $result) s
+377 354 M
+(}) s
+377 338 M
+(# Fields in PC displayed) s
+377 330 M
+(# Total size = 8 ) s
+377 322 M
+(set pwins\(OPC\) [ltranspose [list [addDisp .p.opc 8 PC]]]) s
+377 306 M
+(# Fetch display) s
+377 298 M
+(# Total size = 6+8+4+4+8 = 30) s
+377 290 M
+(set pwins\(F\) [ltranspose \\) s
+377 282 M
+(           [list [addDisp .p.f 6 Instr] \\) s
+377 274 M
+(                 [addDisp .p.f 4 rA]\\) s
+377 266 M
+(                 [addDisp .p.f 4 rB] \\) s
+377 258 M
+(                 [addDisp .p.f 8 valC] \\) s
+377 250 M
+(                 [addDisp .p.f 8 valP]]] ) s
+377 234 M
+(# Decode Display) s
+377 226 M
+(# Total size = 4+8+4+8+4+4 = 32) s
+377 218 M
+(set pwins\(D\) [ltranspose \\) s
+377 210 M
+(           [list \\) s
+377 202 M
+(                 [addDisp .p.d 8 valA] \\) s
+377 194 M
+(                 [addDisp .p.d 8 valB] \\) s
+377 186 M
+(                 [addDisp .p.d 4 dstE] \\) s
+377 178 M
+(                 [addDisp .p.d 4 dstM] \\) s
+377 170 M
+(                 [addDisp .p.d 4 srcA] \\) s
+377 162 M
+(                 [addDisp .p.d 4 srcB]]]) s
+377 122 M
+(# Execute Display) s
+377 114 M
+(# Total size = 3+8 = 11) s
+377 106 M
+(set pwins\(E\) [ltranspose \\) s
+377 98 M
+(           [list [addDisp .p.e 3 Cnd] \\) s
+377 90 M
+(                 [addDisp .p.e 8 valE]]]) s
+377 74 M
+(# Memory Display) s
+377 66 M
+(# Total size = 8) s
+377 58 M
+(set pwins\(M\) [ltranspose \\) s
+377 50 M
+(           [list [addDisp .p.m 8 valM]]]) s
+377 34 M
+(# New PC Display) s
+377 26 M
+(# Total Size = 8) s
+377 18 M
+(set pwins\(NPC\) [ltranspose \\) s
+377 10 M
+(           [list [addDisp .p.npc 8 newPC]]]) s
+_R
+S
+%%Page: (4) 14
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 4 def
+/fname (seq.tcl) def
+/fdir () def
+/ftail (seq.tcl) def
+% User defined strings:
+/fmodstr (Wed Sep 09 11:39:59 2009) def
+/pagenumstr (4) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(# update status line for specified proc register) s
+5 474 M
+(proc updateStage {name txts} {) s
+5 466 M
+(    set Name [string toupper $name]) s
+5 458 M
+(    global pwins) s
+5 450 M
+(    set wins [lindex $pwins\($Name\) 0]) s
+5 442 M
+(    setDisp $wins $txts) s
+5 434 M
+(}   ) s
+5 418 M
+(##########################################################################) s
+5 410 M
+(#                    Instruction Display                                 #) s
+5 402 M
+(##########################################################################) s
+5 386 M
+(toplevel .c) s
+5 378 M
+(wm title .c "Program Code") s
+5 370 M
+(frame .c.cntl ) s
+5 362 M
+(pack .c.cntl -in .c -side top -anchor w) s
+5 354 M
+(label .c.filelab -width 10 -text "File") s
+5 346 M
+(entry .c.filename -width 20 -relief sunken -textvariable codeFile \\) s
+5 338 M
+(        -font $dpyFont -bg white) s
+5 330 M
+(button .c.loadbutton -width $cntlBW -command {loadCode $codeFile} -text Load) s
+5 322 M
+(pack .c.filelab .c.filename .c.loadbutton -in .c.cntl -side left) s
+5 306 M
+(proc clearCode {} {) s
+5 298 M
+(    simLabel {} {}) s
+5 290 M
+(    destroy .c.t) s
+5 282 M
+(    destroy .c.tr) s
+5 274 M
+(}) s
+5 258 M
+(proc createCode {} {) s
+5 250 M
+(    # Create Code Structure) s
+5 242 M
+(    frame .c.t) s
+5 234 M
+(    pack .c.t -in .c -side top -anchor w) s
+5 226 M
+(    frame .c.tr) s
+5 218 M
+(    pack .c.tr -in .c.t -side top -anchor nw) s
+5 210 M
+(}) s
+5 194 M
+(proc loadCode {file} {) s
+5 186 M
+(    # Kill old code window) s
+5 178 M
+(    clearCode) s
+5 170 M
+(    # Create new one) s
+5 162 M
+(    createCode) s
+5 154 M
+(    simCode $file) s
+5 146 M
+(    simResetAll) s
+5 138 M
+(}) s
+5 122 M
+(# Start with initial code window, even though it will be destroyed.) s
+5 114 M
+(createCode) s
+5 98 M
+(# Add a line of code to the display) s
+5 90 M
+(proc addCodeLine {line addr op text} {) s
+5 82 M
+(    global codeRowCount) s
+5 74 M
+(    # Create new line in display) s
+5 66 M
+(    global codeFont) s
+5 58 M
+(    frame .c.tr.$addr) s
+5 50 M
+(    pack .c.tr.$addr -in .c.tr -side top -anchor w) s
+5 42 M
+(    label .c.tr.$addr.a -width 5 -text [format "0x%x" $addr] -font $codeFont) s
+5 34 M
+(    label .c.tr.$addr.i -width 12 -text $op -font $codeFont ) s
+5 26 M
+(    label .c.tr.$addr.s -width 2 -text "" -font $codeFont -bg white) s
+5 18 M
+(    label .c.tr.$addr.t -text $text -font $codeFont) s
+5 10 M
+(    pack .c.tr.$addr.a .c.tr.$addr.i .c.tr.$addr.s \\) s
+5 2 M
+(            .c.tr.$addr.t -in .c.tr.$addr -side left) s
+377 482 M
+(}) s
+377 466 M
+(# Keep track of which instructions have stage labels) s
+377 450 M
+(set oldAddr {}) s
+377 434 M
+(proc simLabel {addrs labs} {) s
+377 426 M
+(    global oldAddr) s
+377 418 M
+(    set newAddr {}) s
+377 410 M
+(    # Clear away any old labels) s
+377 402 M
+(    foreach a $oldAddr {) s
+377 394 M
+(        .c.tr.$a.s config -text "") s
+377 386 M
+(    }) s
+377 378 M
+(    for {set i 0} {$i < [llength $addrs]} {incr i} {) s
+377 370 M
+(        set a [lindex $addrs $i]) s
+377 362 M
+(        set t [lindex $labs $i]) s
+377 354 M
+(        if {[winfo exists .c.tr.$a]} {) s
+377 346 M
+(            .c.tr.$a.s config -text $t) s
+377 338 M
+(            set newAddr [concat $newAddr $a]) s
+377 330 M
+(        }) s
+377 322 M
+(    }) s
+377 314 M
+(    set oldAddr $newAddr) s
+377 306 M
+(}) s
+377 290 M
+(proc simResetAll {} {) s
+377 282 M
+(    global simStat) s
+377 274 M
+(    set simStat "AOK") s
+377 266 M
+(    simReset) s
+377 258 M
+(    simLabel {} {}) s
+377 250 M
+(    clearMem) s
+377 242 M
+(}) s
+377 226 M
+(###############################################################################) s
+377 218 M
+(#    Memory Display                                                           #) s
+377 210 M
+(###############################################################################) s
+377 202 M
+(toplevel .m) s
+377 194 M
+(wm title .m "Memory Contents") s
+377 186 M
+(frame .m.t) s
+377 178 M
+(pack .m.t -in .m -side top -anchor w) s
+377 162 M
+(label .m.t.lab -width 6 -font $dpyFont -text "      ") s
+377 154 M
+(pack .m.t.lab -in .m.t -side left) s
+377 146 M
+(for {set i 0} {$i < 16} {incr i 4} {) s
+377 138 M
+(    label .m.t.a$i -width 8 -font $dpyFont -text [format "  0x---%x" [expr $i % 16]]) s
+377 130 M
+(    pack .m.t.a$i -in .m.t -side left) s
+377 122 M
+(}) s
+377 98 M
+(# Keep track of range of addresses currently displayed) s
+377 90 M
+(set minAddr 0) s
+377 82 M
+(set memCnt  0) s
+377 74 M
+(set haveMem 0) s
+377 58 M
+(proc createMem {nminAddr nmemCnt} {) s
+377 50 M
+(    global minAddr memCnt haveMem codeFont dpyFont normalBg) s
+377 42 M
+(    set minAddr $nminAddr) s
+377 34 M
+(    set memCnt $nmemCnt) s
+377 18 M
+(    if { $haveMem } { destroy .m.e }) s
+377 2 M
+(    # Create Memory Structure) s
+_R
+S
+%%Page: (5) 15
+%%BeginPageSetup
+_S
+90 rotate
+24 -574 translate
+/pagenum 5 def
+/fname (seq.tcl) def
+/fdir () def
+/ftail (seq.tcl) def
+% User defined strings:
+/fmodstr (Wed Sep 09 11:39:59 2009) def
+/pagenumstr (5) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 482 M
+(    frame .m.e) s
+5 474 M
+(    set haveMem 1) s
+5 466 M
+(    pack .m.e -in .m -side top -anchor w) s
+5 458 M
+(    # Now fill it with values) s
+5 450 M
+(    for {set i 0} {$i < $memCnt} {incr i 16} {) s
+5 442 M
+(        set addr [expr $minAddr + $i]) s
+5 426 M
+(        frame .m.e.r$i) s
+5 418 M
+(        pack .m.e.r$i -side bottom -in .m.e) s
+5 410 M
+(        label .m.e.r$i.lab -width 6 -font $dpyFont -text [format "0x%.3x-"  [expr $add) s
+5 402 M
+(r / 16]]) s
+5 394 M
+(        pack .m.e.r$i.lab -in .m.e.r$i -side left) s
+5 378 M
+(        for {set j 0} {$j < 16} {incr j 4} {) s
+5 370 M
+(            set a [expr $addr + $j]) s
+5 362 M
+(            label .m.e.v$a -width 8 -font $dpyFont -relief ridge \\) s
+5 354 M
+(                -bg $normalBg) s
+5 346 M
+(            pack .m.e.v$a -in .m.e.r$i -side left) s
+5 338 M
+(        }) s
+5 330 M
+(    }) s
+5 322 M
+(}) s
+5 306 M
+(proc setMem {Addr Val} {) s
+5 298 M
+(    global minAddr memCnt) s
+5 290 M
+(    if {$Addr < $minAddr || $Addr > [expr $minAddr + $memCnt]} {) s
+5 282 M
+(        error "Memory address $Addr out of range") s
+5 274 M
+(    }) s
+5 266 M
+(    .m.e.v$Addr config -text [format %8x $Val]) s
+5 258 M
+(}) s
+5 242 M
+(proc clearMem {} {) s
+5 234 M
+(    destroy .m.e) s
+5 226 M
+(    createMem 0 0) s
+5 218 M
+(}) s
+5 186 M
+(###############################################################################) s
+5 178 M
+(#    Command Line Initialization                                              #) s
+5 170 M
+(###############################################################################) s
+5 154 M
+(# Get code file name from input) s
+5 138 M
+(# Find file with specified extension) s
+5 130 M
+(proc findFile {tlist ext} {) s
+5 122 M
+(    foreach t $tlist {) s
+5 114 M
+(        if {[string match "*.$ext" $t]} {return $t}) s
+5 106 M
+(    }) s
+5 98 M
+(    return "") s
+5 90 M
+(}) s
+5 66 M
+(set codeFile [findFile $argv yo]) s
+5 58 M
+(if {$codeFile != ""} { loadCode $codeFile}) s
+_R
+S
+%%Trailer
+%%Pages: 15
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF

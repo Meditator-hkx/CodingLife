@@ -1,0 +1,55 @@
+\begin{alltt}
+{\scriptsize   1} ##################################################################
+{\scriptsize   2} # ncopy.ys - Copy a src block of len ints to dst.
+{\scriptsize   3} # Return the number of positive ints (>0) contained in src.
+{\scriptsize   4} #
+{\scriptsize   5} # Include your name and ID here.
+{\scriptsize   6} #
+{\scriptsize   7} # Describe how and why you modified the baseline code.
+{\scriptsize   8} #
+{\scriptsize   9} ##################################################################
+{\scriptsize  10} # Do not modify this portion
+{\scriptsize  11} # Function prologue.
+{\scriptsize  12} ncopy:  pushl %ebp              # Save old frame pointer
+{\scriptsize  13}         rrmovl %esp,%ebp        # Set up new frame pointer
+{\scriptsize  14}         pushl %esi              # Save callee-save regs
+{\scriptsize  15}         pushl %ebx
+{\scriptsize  16}         pushl %edi
+{\scriptsize  17}         mrmovl 8(%ebp),%ebx     # src
+{\scriptsize  18}         mrmovl 16(%ebp),%edx    # len
+{\scriptsize  19}         mrmovl 12(%ebp),%ecx    # dst
+{\scriptsize  20} 
+{\scriptsize  21} ##################################################################
+{\scriptsize  22} # You can modify this portion
+{\scriptsize  23}         # Loop header
+{\scriptsize  24}         xorl %eax,%eax          # count = 0;
+{\scriptsize  25}         andl %edx,%edx          # len <= 0?
+{\scriptsize  26}         jle Done                # if so, goto Done:
+{\scriptsize  27} 
+{\scriptsize  28} Loop:   mrmovl (%ebx), %esi     # read val from src...
+{\scriptsize  29}         rmmovl %esi, (%ecx)     # ...and store it to dst
+{\scriptsize  30}         andl %esi, %esi         # val <= 0?
+{\scriptsize  31}         jle Npos                # if so, goto Npos:
+{\scriptsize  32}         irmovl $1, %edi
+{\scriptsize  33}         addl %edi, %eax         # count++
+{\scriptsize  34} Npos:   irmovl $1, %edi
+{\scriptsize  35}         subl %edi, %edx         # len--
+{\scriptsize  36}         irmovl $4, %edi
+{\scriptsize  37}         addl %edi, %ebx         # src++
+{\scriptsize  38}         addl %edi, %ecx         # dst++
+{\scriptsize  39}         andl %edx,%edx          # len > 0?
+{\scriptsize  40}         jg Loop                 # if so, goto Loop:
+{\scriptsize  41} ##################################################################
+{\scriptsize  42} # Do not modify the following section of code
+{\scriptsize  43} # Function epilogue.
+{\scriptsize  44} Done:
+{\scriptsize  45}         popl %edi               # Restore callee-save registers
+{\scriptsize  46}         popl %ebx
+{\scriptsize  47}         popl %esi
+{\scriptsize  48}         rrmovl %ebp, %esp
+{\scriptsize  49}         popl %ebp
+{\scriptsize  50}         ret
+{\scriptsize  51} ##################################################################
+{\scriptsize  52} # Keep the following label at the end of your function
+{\scriptsize  53} End:
+\end{alltt}

@@ -1,0 +1,970 @@
+
+CS:APP Architecture Lab Part C: Grading Sheet for xyz
+
+Part 1: Building simulator
+
+# Building the pipe-full.hcl version of PIPE
+../misc/hcl2c -n pipe-full.hcl < pipe-full.hcl > pipe-full.c
+gcc -Wall -O2 -isystem /usr/include -I../misc -DHAS_GUI -o psim psim.c pipe-full.c \
+		../misc/isa.c -L/usr/lib -ltk -ltcl -lm
+/usr/bin/ld: skipping incompatible /usr/lib/libtk.so when searching for -ltk
+/usr/bin/ld: skipping incompatible /usr/lib/libtcl.so when searching for -ltcl
+/usr/bin/ld: skipping incompatible /usr/lib/libm.so when searching for -lm
+/usr/bin/ld: skipping incompatible /usr/lib/libm.a when searching for -lm
+/usr/bin/ld: skipping incompatible /usr/lib/libc.so when searching for -lc
+/usr/bin/ld: skipping incompatible /usr/lib/libc.a when searching for -lc
+
+**********
+Part 2: Benchmark regression tests on psim
+**********
+../pipe/psim -t asum.yo > asum.pipe
+../pipe/psim -t asumr.yo > asumr.pipe
+../pipe/psim -t cjr.yo > cjr.pipe
+../pipe/psim -t j-cc.yo > j-cc.pipe
+../pipe/psim -t poptest.yo > poptest.pipe
+../pipe/psim -t pushquestion.yo > pushquestion.pipe
+../pipe/psim -t pushtest.yo > pushtest.pipe
+../pipe/psim -t prog1.yo > prog1.pipe
+../pipe/psim -t prog2.yo > prog2.pipe
+../pipe/psim -t prog3.yo > prog3.pipe
+../pipe/psim -t prog4.yo > prog4.pipe
+../pipe/psim -t prog5.yo > prog5.pipe
+../pipe/psim -t prog6.yo > prog6.pipe
+../pipe/psim -t prog7.yo > prog7.pipe
+../pipe/psim -t prog8.yo > prog8.pipe
+../pipe/psim -t ret-hazard.yo > ret-hazard.pipe
+grep "ISA Check" *.pipe
+asum.pipe:ISA Check Succeeds
+asumr.pipe:ISA Check Succeeds
+cjr.pipe:ISA Check Succeeds
+j-cc.pipe:ISA Check Succeeds
+poptest.pipe:ISA Check Succeeds
+prog1.pipe:ISA Check Succeeds
+prog2.pipe:ISA Check Succeeds
+prog3.pipe:ISA Check Succeeds
+prog4.pipe:ISA Check Succeeds
+prog5.pipe:ISA Check Succeeds
+prog6.pipe:ISA Check Succeeds
+prog7.pipe:ISA Check Succeeds
+prog8.pipe:ISA Check Succeeds
+pushquestion.pipe:ISA Check Succeeds
+pushtest.pipe:ISA Check Succeeds
+ret-hazard.pipe:ISA Check Succeeds
+rm asum.pipe asumr.pipe cjr.pipe j-cc.pipe poptest.pipe pushquestion.pipe pushtest.pipe prog1.pipe prog2.pipe prog3.pipe prog4.pipe prog5.pipe prog6.pipe prog7.pipe prog8.pipe ret-hazard.pipe
+
+Passed 16/16 benchmark regression tests
+
+**********
+Part 3: Extensive regression tests
+**********
+./optest.pl -s ../pipe/psim 
+Simulating with ../pipe/psim
+  All 49 ISA Checks Succeed
+./jtest.pl -s ../pipe/psim 
+Simulating with ../pipe/psim
+  All 64 ISA Checks Succeed
+./ctest.pl -s ../pipe/psim 
+Simulating with ../pipe/psim
+  All 22 ISA Checks Succeed
+./htest.pl -s ../pipe/psim 
+Simulating with ../pipe/psim
+  All 600 ISA Checks Succeed
+
+Passed 735/735 extensive regression tests
+
+**********
+Part 4: Correctness of ncopy program running on ISA simulator
+**********
+Simulating with instruction set simulator yis
+	ncopy
+0	OK
+1	OK
+2	OK
+3	OK
+4	OK
+5	OK
+6	OK
+7	OK
+8	OK
+9	OK
+10	OK
+11	OK
+12	OK
+13	OK
+14	OK
+15	OK
+16	OK
+17	OK
+18	OK
+19	OK
+20	OK
+21	OK
+22	OK
+23	OK
+24	OK
+25	OK
+26	OK
+27	OK
+28	OK
+29	OK
+30	OK
+31	OK
+32	OK
+33	OK
+34	OK
+35	OK
+36	OK
+37	OK
+38	OK
+39	OK
+40	OK
+41	OK
+42	OK
+43	OK
+44	OK
+45	OK
+46	OK
+47	OK
+48	OK
+49	OK
+50	OK
+51	OK
+52	OK
+53	OK
+54	OK
+55	OK
+56	OK
+57	OK
+58	OK
+59	OK
+60	OK
+61	OK
+62	OK
+63	OK
+64	OK
+128	OK
+192	OK
+256	OK
+68/68 pass correctness test
+
+**********
+Part 5: Correctness of ncopy program running on pipeline simulator
+**********
+Simulating with pipeline simulator psim
+	ncopy
+0	OK
+1	OK
+2	OK
+3	OK
+4	OK
+5	OK
+6	OK
+7	OK
+8	OK
+9	OK
+10	OK
+11	OK
+12	OK
+13	OK
+14	OK
+15	OK
+16	OK
+17	OK
+18	OK
+19	OK
+20	OK
+21	OK
+22	OK
+23	OK
+24	OK
+25	OK
+26	OK
+27	OK
+28	OK
+29	OK
+30	OK
+31	OK
+32	OK
+33	OK
+34	OK
+35	OK
+36	OK
+37	OK
+38	OK
+39	OK
+40	OK
+41	OK
+42	OK
+43	OK
+44	OK
+45	OK
+46	OK
+47	OK
+48	OK
+49	OK
+50	OK
+51	OK
+52	OK
+53	OK
+54	OK
+55	OK
+56	OK
+57	OK
+58	OK
+59	OK
+60	OK
+61	OK
+62	OK
+63	OK
+64	OK
+128	OK
+192	OK
+256	OK
+68/68 pass correctness test
+
+**********
+Part 6: Performance test
+**********
+	ncopy
+0	41
+1	47	47.00
+2	53	26.50
+3	59	19.67
+4	65	16.25
+5	71	14.20
+6	77	12.83
+7	83	11.86
+8	89	11.12
+9	95	10.56
+10	101	10.10
+11	107	9.73
+12	113	9.42
+13	119	9.15
+14	125	8.93
+15	131	8.73
+16	137	8.56
+17	151	8.88
+18	157	8.72
+19	163	8.58
+20	169	8.45
+21	175	8.33
+22	181	8.23
+23	187	8.13
+24	193	8.04
+25	199	7.96
+26	205	7.88
+27	211	7.81
+28	217	7.75
+29	223	7.69
+30	229	7.63
+31	235	7.58
+32	241	7.53
+33	247	7.48
+34	257	7.56
+35	263	7.51
+36	269	7.47
+37	275	7.43
+38	281	7.39
+39	287	7.36
+40	293	7.33
+41	299	7.29
+42	305	7.26
+43	311	7.23
+44	317	7.20
+45	323	7.18
+46	329	7.15
+47	335	7.13
+48	341	7.10
+49	347	7.08
+50	353	7.06
+51	363	7.12
+52	369	7.10
+53	375	7.08
+54	381	7.06
+55	387	7.04
+56	393	7.02
+57	399	7.00
+58	405	6.98
+59	411	6.97
+60	417	6.95
+61	423	6.93
+62	429	6.92
+63	435	6.90
+64	441	6.89
+Average CPE	9.27
+Score	60.0/60.0
+
+PARTC_SCORES = 60.0
+
+Part 7: Handin file xyz-ncopy.ys
+
+# #################################################################
+# ncopy.ys - Copy a src block of len ints to dst.
+# Return the number of positive ints (>0) contained in src.
+# 
+# Include your name and ID here.
+# 
+# Describe how and why you modified the baseline code.
+# This code unrolls the main loop by a factor of 17.
+# It finishes by jumping to the appropriate position in a code
+# sequence that copies the possible remaining elements
+# #################################################################
+
+# Do not modify this portion
+# Function prologue
+ncopy:
+	pushl %ebp              # Save old frame pointer
+	rrmovl %esp,%ebp        # Set up new frame pointer
+	pushl %esi              # Save callee-save regs
+	pushl %ebx
+	pushl %edi
+	mrmovl 8(%ebp),%ebx     # src
+	mrmovl 12(%ebp),%ecx    # dst
+	mrmovl 16(%ebp),%edx    # len
+
+# #################################################################
+# You can modify this portion
+
+	xorl %eax,%eax          # count = 0
+	iaddl $-17, %edx        # lmu = len - 17
+	jl SkipLoop             # If < 0, skip loop
+
+# Main loop.  Copy 17 elements per iteration
+Loop:
+	mrmovl 0(%ebx), %esi    # read val from src+0
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 0(%ecx)    # Store val at dst+0
+	mrmovl 4(%ebx), %esi    # read val from src+1
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 4(%ecx)    # Store val at dst+1
+	mrmovl 8(%ebx), %esi    # read val from src+2
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 8(%ecx)    # Store val at dst+2
+	mrmovl 12(%ebx), %esi   # read val from src+3
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 12(%ecx)   # Store val at dst+3
+	mrmovl 16(%ebx), %esi   # read val from src+4
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 16(%ecx)   # Store val at dst+4
+	mrmovl 20(%ebx), %esi   # read val from src+5
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 20(%ecx)   # Store val at dst+5
+	mrmovl 24(%ebx), %esi   # read val from src+6
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 24(%ecx)   # Store val at dst+6
+	mrmovl 28(%ebx), %esi   # read val from src+7
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 28(%ecx)   # Store val at dst+7
+	mrmovl 32(%ebx), %esi   # read val from src+8
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 32(%ecx)   # Store val at dst+8
+	mrmovl 36(%ebx), %esi   # read val from src+9
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 36(%ecx)   # Store val at dst+9
+	mrmovl 40(%ebx), %esi   # read val from src+10
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 40(%ecx)   # Store val at dst+10
+	mrmovl 44(%ebx), %esi   # read val from src+11
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 44(%ecx)   # Store val at dst+11
+	mrmovl 48(%ebx), %esi   # read val from src+12
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 48(%ecx)   # Store val at dst+12
+	mrmovl 52(%ebx), %esi   # read val from src+13
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 52(%ecx)   # Store val at dst+13
+	mrmovl 56(%ebx), %esi   # read val from src+14
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 56(%ecx)   # Store val at dst+14
+	mrmovl 60(%ebx), %esi   # read val from src+15
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 60(%ecx)   # Store val at dst+15
+	mrmovl 64(%ebx), %esi   # read val from src+16
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 64(%ecx)   # Store val at dst+16
+	iaddl $68, %ebx         # src+=17
+	iaddl $68, %ecx         # dst+=17
+	iaddl $-17, %edx        # lmu-=17
+	jge Loop                # if lmu >= 0, goto Loop
+SkipLoop:
+# Finish remaining elements
+
+# Find jump offset at table position (-lmu-1)
+	irmovl $-1, %esi
+	subl %edx, %esi         # -1-lmu
+	addl %esi, %esi         # 2*(-1-lmu)
+	addl %esi, %esi         # 4*(-1-lmu)
+	mrmovl JTab(%esi), %edx # Fetch offset
+	pushl %edx              # Put jump target on stack
+	ret                     # Jump to it
+jstart:                         # Copying code for remaining possible elements
+# Completion code
+Copied0:
+	mrmovl 60(%ebx), %esi   # read val from src+15
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 60(%ecx)   # Store val at dst+15
+Copied1:
+	mrmovl 56(%ebx), %esi   # read val from src+14
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 56(%ecx)   # Store val at dst+14
+Copied2:
+	mrmovl 52(%ebx), %esi   # read val from src+13
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 52(%ecx)   # Store val at dst+13
+Copied3:
+	mrmovl 48(%ebx), %esi   # read val from src+12
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 48(%ecx)   # Store val at dst+12
+Copied4:
+	mrmovl 44(%ebx), %esi   # read val from src+11
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 44(%ecx)   # Store val at dst+11
+Copied5:
+	mrmovl 40(%ebx), %esi   # read val from src+10
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 40(%ecx)   # Store val at dst+10
+Copied6:
+	mrmovl 36(%ebx), %esi   # read val from src+9
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 36(%ecx)   # Store val at dst+9
+Copied7:
+	mrmovl 32(%ebx), %esi   # read val from src+8
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 32(%ecx)   # Store val at dst+8
+Copied8:
+	mrmovl 28(%ebx), %esi   # read val from src+7
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 28(%ecx)   # Store val at dst+7
+Copied9:
+	mrmovl 24(%ebx), %esi   # read val from src+6
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 24(%ecx)   # Store val at dst+6
+Copied10:
+	mrmovl 20(%ebx), %esi   # read val from src+5
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 20(%ecx)   # Store val at dst+5
+Copied11:
+	mrmovl 16(%ebx), %esi   # read val from src+4
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 16(%ecx)   # Store val at dst+4
+Copied12:
+	mrmovl 12(%ebx), %esi   # read val from src+3
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 12(%ecx)   # Store val at dst+3
+Copied13:
+	mrmovl 8(%ebx), %esi    # read val from src+2
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 8(%ecx)    # Store val at dst+2
+Copied14:
+	mrmovl 4(%ebx), %esi    # read val from src+1
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 4(%ecx)    # Store val at dst+1
+Copied15:
+	mrmovl 0(%ebx), %esi    # read val from src+0
+	rrmovl %eax, %edi       # Copy count
+	iaddl $1, %edi          # count+1
+	andl %esi, %esi         # Test val
+	cmovg %edi, %eax        # If val > 0, count = count+1
+	rmmovl %esi, 0(%ecx)    # Store val at dst+0
+Copied16:
+
+# #################################################################
+
+# Do not modify the following section of code
+# Function epilogue
+Done:
+	popl %edi
+	popl %ebx
+	popl %esi
+	rrmovl %ebp, %esp
+	popl %ebp
+	ret
+# #################################################################
+# # Jump table
+JTab:
+	.long Copied0
+	.long Copied1
+	.long Copied2
+	.long Copied3
+	.long Copied4
+	.long Copied5
+	.long Copied6
+	.long Copied7
+	.long Copied8
+	.long Copied9
+	.long Copied10
+	.long Copied11
+	.long Copied12
+	.long Copied13
+	.long Copied14
+	.long Copied15
+	.long Copied16
+# ##################################################################
+# # Keep the following label at the end of your function
+End:
+
+Part 8: Handin file xyz-pipe-full.hcl
+
+#/* $begin pipe-all-hcl */
+####################################################################
+#    HCL Description of Control for Pipelined Y86 Processor        #
+#    Copyright (C) Randal E. Bryant, David R. O'Hallaron, 2010     #
+####################################################################
+
+## This is the solution for the iaddl and leave problems
+
+####################################################################
+#    C Include's.  Don't alter these                               #
+####################################################################
+
+quote '#include <stdio.h>'
+quote '#include "isa.h"'
+quote '#include "pipeline.h"'
+quote '#include "stages.h"'
+quote '#include "sim.h"'
+quote 'int sim_main(int argc, char *argv[]);'
+quote 'int main(int argc, char *argv[]){return sim_main(argc,argv);}'
+
+####################################################################
+#    Declarations.  Do not change/remove/delete any of these       #
+####################################################################
+
+##### Symbolic representation of Y86 Instruction Codes #############
+intsig INOP 	'I_NOP'
+intsig IHALT	'I_HALT'
+intsig IRRMOVL	'I_RRMOVL'
+intsig IIRMOVL	'I_IRMOVL'
+intsig IRMMOVL	'I_RMMOVL'
+intsig IMRMOVL	'I_MRMOVL'
+intsig IOPL	'I_ALU'
+intsig IJXX	'I_JMP'
+intsig ICALL	'I_CALL'
+intsig IRET	'I_RET'
+intsig IPUSHL	'I_PUSHL'
+intsig IPOPL	'I_POPL'
+# Instruction code for iaddl instruction
+intsig IIADDL	'I_IADDL'
+# Instruction code for leave instruction
+intsig ILEAVE	'I_LEAVE'
+
+##### Symbolic represenations of Y86 function codes            #####
+intsig FNONE    'F_NONE'        # Default function code
+
+##### Symbolic representation of Y86 Registers referenced      #####
+intsig RESP     'REG_ESP'    	     # Stack Pointer
+intsig REBP     'REG_EBP'    	     # Frame Pointer
+intsig RNONE    'REG_NONE'   	     # Special value indicating "no register"
+
+##### ALU Functions referenced explicitly ##########################
+intsig ALUADD	'A_ADD'		     # ALU should add its arguments
+
+##### Possible instruction status values                       #####
+intsig SBUB	'STAT_BUB'	# Bubble in stage
+intsig SAOK	'STAT_AOK'	# Normal execution
+intsig SADR	'STAT_ADR'	# Invalid memory address
+intsig SINS	'STAT_INS'	# Invalid instruction
+intsig SHLT	'STAT_HLT'	# Halt instruction encountered
+
+##### Signals that can be referenced by control logic ##############
+
+##### Pipeline Register F ##########################################
+
+intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+
+##### Intermediate Values in Fetch Stage ###########################
+
+intsig imem_icode  'imem_icode'      # icode field from instruction memory
+intsig imem_ifun   'imem_ifun'       # ifun  field from instruction memory
+intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+intsig f_valP	'if_id_next->valp'   # Address of following instruction
+boolsig imem_error 'imem_error'	     # Error signal from instruction memory
+boolsig instr_valid 'instr_valid'    # Is fetched instruction valid?
+
+##### Pipeline Register D ##########################################
+intsig D_icode 'if_id_curr->icode'   # Instruction code
+intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+intsig D_valP 'if_id_curr->valp'     # Incremented PC
+
+##### Intermediate Values in Decode Stage  #########################
+
+intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+intsig d_rvalA 'd_regvala'	     # valA read from register file
+intsig d_rvalB 'd_regvalb'	     # valB read from register file
+
+##### Pipeline Register E ##########################################
+intsig E_icode 'id_ex_curr->icode'   # Instruction code
+intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+intsig E_valC  'id_ex_curr->valc'    # Constant data
+intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+intsig E_valA  'id_ex_curr->vala'    # Source A value
+intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+intsig E_valB  'id_ex_curr->valb'    # Source B value
+intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+
+##### Intermediate Values in Execute Stage #########################
+intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+
+##### Pipeline Register M                  #########################
+intsig M_stat 'ex_mem_curr->status'     # Instruction status
+intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+intsig M_valA  'ex_mem_curr->vala'      # Source A value
+intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+boolsig dmem_error 'dmem_error'	        # Error signal from instruction memory
+
+##### Intermediate Values in Memory Stage ##########################
+intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+
+##### Pipeline Register W ##########################################
+intsig W_stat 'mem_wb_curr->status'     # Instruction status
+intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+
+####################################################################
+#    Control Signal Definitions.                                   #
+####################################################################
+
+################ Fetch Stage     ###################################
+
+## What address should instruction be fetched at
+int f_pc = [
+	# Mispredicted branch.  Fetch at incremented PC
+	M_icode == IJXX && !M_Cnd : M_valA;
+	# Completion of RET instruction.
+	W_icode == IRET : W_valM;
+	# Default: Use predicted value of PC
+	1 : F_predPC;
+];
+
+## Determine icode of fetched instruction
+int f_icode = [
+	imem_error : INOP;
+	1: imem_icode;
+];
+
+# Determine ifun
+int f_ifun = [
+	imem_error : FNONE;
+	1: imem_ifun;
+];
+
+# Is instruction valid?
+bool instr_valid = f_icode in 
+	{ INOP, IHALT, IRRMOVL, IIRMOVL, IRMMOVL, IMRMOVL,
+#	  IOPL, IJXX, ICALL, IRET, IPUSHL, IPOPL, ILEAVE,
+	  IOPL, IJXX, ICALL, IRET, IPUSHL, IPOPL, IIADDL, ILEAVE };
+
+# Determine status code for fetched instruction
+int f_stat = [
+	imem_error: SADR;
+	!instr_valid : SINS;
+	f_icode == IHALT : SHLT;
+	1 : SAOK;
+];
+
+# Does fetched instruction require a regid byte?
+bool need_regids =
+	f_icode in { IRRMOVL, IOPL, IPUSHL, IPOPL, 
+		     IIRMOVL, IRMMOVL, IMRMOVL, IIADDL };
+
+# Does fetched instruction require a constant word?
+bool need_valC =
+	f_icode in { IIRMOVL, IRMMOVL, IMRMOVL, IJXX, ICALL, IIADDL };
+
+# Predict next value of PC
+int f_predPC = [
+	f_icode in { IJXX, ICALL } : f_valC;
+	1 : f_valP;
+];
+
+################ Decode Stage ######################################
+
+
+## What register should be used as the A source?
+int d_srcA = [
+	D_icode in { IRRMOVL, IRMMOVL, IOPL, IPUSHL  } : D_rA;
+	D_icode in { IPOPL, IRET } : RESP;
+	D_icode in { ILEAVE } : REBP;
+	1 : RNONE; # Don't need register
+];
+
+## What register should be used as the B source?
+int d_srcB = [
+	D_icode in { IOPL, IRMMOVL, IMRMOVL, IIADDL  } : D_rB;
+	D_icode in { IPUSHL, IPOPL, ICALL, IRET } : RESP;
+	D_icode in { ILEAVE } : REBP;
+	1 : RNONE;  # Don't need register
+];
+
+## What register should be used as the E destination?
+int d_dstE = [
+	D_icode in { IRRMOVL, IIRMOVL, IOPL, IIADDL } : D_rB;
+	D_icode in { IPUSHL, IPOPL, ICALL, IRET, ILEAVE } : RESP;
+	1 : RNONE;  # Don't write any register
+];
+
+## What register should be used as the M destination?
+int d_dstM = [
+	D_icode in { IMRMOVL, IPOPL } : D_rA;
+	D_icode in { ILEAVE } : REBP;
+	1 : RNONE;  # Don't write any register
+];
+
+## What should be the A value?
+## Forward into decode stage for valA
+int d_valA = [
+	D_icode in { ICALL, IJXX } : D_valP; # Use incremented PC
+	d_srcA == e_dstE : e_valE;    # Forward valE from execute
+	d_srcA == M_dstM : m_valM;    # Forward valM from memory
+	d_srcA == M_dstE : M_valE;    # Forward valE from memory
+	d_srcA == W_dstM : W_valM;    # Forward valM from write back
+	d_srcA == W_dstE : W_valE;    # Forward valE from write back
+	1 : d_rvalA;  # Use value read from register file
+];
+
+int d_valB = [
+	d_srcB == e_dstE : e_valE;    # Forward valE from execute
+	d_srcB == M_dstM : m_valM;    # Forward valM from memory
+	d_srcB == M_dstE : M_valE;    # Forward valE from memory
+	d_srcB == W_dstM : W_valM;    # Forward valM from write back
+	d_srcB == W_dstE : W_valE;    # Forward valE from write back
+	1 : d_rvalB;  # Use value read from register file
+];
+
+################ Execute Stage #####################################
+
+## Select input A to ALU
+int aluA = [
+	E_icode in { IRRMOVL, IOPL } : E_valA;
+	E_icode in { IIRMOVL, IRMMOVL, IMRMOVL, IIADDL } : E_valC;
+	E_icode in { ICALL, IPUSHL } : -4;
+	E_icode in { IRET, IPOPL, ILEAVE } : 4;
+	# Other instructions don't need ALU
+];
+
+## Select input B to ALU
+int aluB = [
+	E_icode in { IRMMOVL, IMRMOVL, IOPL, ICALL, 
+		     IPUSHL, IRET, IPOPL, IIADDL, ILEAVE } : E_valB;
+	E_icode in { IRRMOVL, IIRMOVL } : 0;
+	# Other instructions don't need ALU
+];
+
+## Set the ALU function
+int alufun = [
+	E_icode == IOPL : E_ifun;
+	1 : ALUADD;
+];
+
+## Should the condition codes be updated?
+bool set_cc = E_icode in { IOPL, IIADDL } &&
+	# State changes only during normal operation
+	!m_stat in { SADR, SINS, SHLT } && !W_stat in { SADR, SINS, SHLT };
+
+## Generate valA in execute stage
+int e_valA = E_valA;    # Pass valA through stage
+
+## Set dstE to RNONE in event of not-taken conditional move
+int e_dstE = [
+	E_icode == IRRMOVL && !e_Cnd : RNONE;
+	1 : E_dstE;
+];
+
+################ Memory Stage ######################################
+
+## Select memory address
+int mem_addr = [
+	M_icode in { IRMMOVL, IPUSHL, ICALL, IMRMOVL } : M_valE;
+	M_icode in { IPOPL, IRET, ILEAVE } : M_valA;
+	# Other instructions don't need address
+];
+
+## Set read control signal
+bool mem_read = M_icode in { IMRMOVL, IPOPL, IRET, ILEAVE };
+
+## Set write control signal
+bool mem_write = M_icode in { IRMMOVL, IPUSHL, ICALL };
+
+#/* $begin pipe-m_stat-hcl */
+## Update the status
+int m_stat = [
+	dmem_error : SADR;
+	1 : M_stat;
+];
+#/* $end pipe-m_stat-hcl */
+
+## Set E port register ID
+int w_dstE = W_dstE;
+
+## Set E port value
+int w_valE = W_valE;
+
+## Set M port register ID
+int w_dstM = W_dstM;
+
+## Set M port value
+int w_valM = W_valM;
+
+## Update processor status
+int Stat = [
+	W_stat == SBUB : SAOK;
+	1 : W_stat;
+];
+
+################ Pipeline Register Control #########################
+
+# Should I stall or inject a bubble into Pipeline Register F?
+# At most one of these can be true.
+bool F_bubble = 0;
+bool F_stall =
+	# Conditions for a load/use hazard
+	E_icode in { IMRMOVL, IPOPL, ILEAVE } &&
+	 E_dstM in { d_srcA, d_srcB } ||
+	# Stalling at fetch while ret passes through pipeline
+	IRET in { D_icode, E_icode, M_icode };
+
+# Should I stall or inject a bubble into Pipeline Register D?
+# At most one of these can be true.
+bool D_stall = 
+	# Conditions for a load/use hazard
+	E_icode in { IMRMOVL, IPOPL, ILEAVE } &&
+	 E_dstM in { d_srcA, d_srcB };
+
+bool D_bubble =
+	# Mispredicted branch
+	(E_icode == IJXX && !e_Cnd) ||
+	# Stalling at fetch while ret passes through pipeline
+	# but not condition for a load/use hazard
+	!(E_icode in { IMRMOVL, IPOPL, ILEAVE } && E_dstM in { d_srcA, d_srcB }) &&
+	  IRET in { D_icode, E_icode, M_icode };
+
+# Should I stall or inject a bubble into Pipeline Register E?
+# At most one of these can be true.
+bool E_stall = 0;
+bool E_bubble =
+	# Mispredicted branch
+	(E_icode == IJXX && !e_Cnd) ||
+	# Conditions for a load/use hazard
+	E_icode in { IMRMOVL, IPOPL, ILEAVE } &&
+	 E_dstM in { d_srcA, d_srcB};
+
+# Should I stall or inject a bubble into Pipeline Register M?
+# At most one of these can be true.
+bool M_stall = 0;
+# Start injecting bubbles as soon as exception passes through memory stage
+bool M_bubble = m_stat in { SADR, SINS, SHLT } || W_stat in { SADR, SINS, SHLT };
+
+# Should I stall or inject a bubble into Pipeline Register W?
+bool W_stall = W_stat in { SADR, SINS, SHLT };
+bool W_bubble = 0;
+#/* $end pipe-all-hcl */
