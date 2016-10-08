@@ -1,5 +1,5 @@
 /* 
- * CS:APP Data Lab 
+ *Lab of Computer Architecture 
  * 
  * <Please put your name and userid here>
  * 
@@ -150,15 +150,7 @@ int bitAnd(int x, int y) {
  *   Rating: 2
  */
 int getByte(int x, int n) {
-
-
-
-
-
-
-
   return 2;
-
 }
 /* 
  * logicalShift - shift x to the right by n, using a logical shift
